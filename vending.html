@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<!-- Redesigned Vending page — cleaner layout, featured event ticket section added -->
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vending | Apex Card Show</title>
+  <link rel="icon" type="image/png" href="images/apexlogo3d.png"/>
+  <link rel="stylesheet" href="css/vending.css" />
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <style>
+    /* ── GOOGLE FONTS ── */
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      --gold: #b91c1c;
+      --gold-dark: #7f1d1d;
+      --accent: #b91c1c;
+      --accent-dark: #7f1d1d;
+      --red-bright: #ef4444;
+      --ink: #0a0a0a;
+      --white: #fff;
+      --light-bg: #fafafa;
+      --soft-border: #e5e5e5;
+      --card-shadow: 0 20px 50px rgba(0,0,0,0.12);
+    }
+
+    /* ── HERO ── */
+    .vend-hero {
+      background: #0a0a0a;
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated radial gradient backdrop */
+    .vend-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 80%, rgba(185,28,28,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(185,28,28,0.2) 0%, transparent 60%);
+      animation: heroGlow 8s ease-in-out infinite alternate;
+    }
+    @keyframes heroGlow {
+      0%   { opacity: .6; }
+      100% { opacity: 1; }
+    }
+
+    /* Grid overlay texture */
+    .vend-hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 760px;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(185,28,28,0.4);
+      background: rgba(185,28,28,0.1);
+      padding: 6px 18px;
+      border-radius: 999px;
+      margin-bottom: 22px;
+    }
+
+    .vend-hero h1 {
+      font-family: 'Bebas Neue', 'Impact', sans-serif;
+      font-size: clamp(4rem, 10vw, 8rem);
+      font-weight: 400;
+      letter-spacing: .04em;
+      line-height: .95;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    /* Gold gradient on second line of heading */
+    .vend-hero h1 span {
+      background: linear-gradient(135deg, #b91c1c, #ef4444, #7f1d1d);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.55);
+      max-width: 480px;
+      margin: 0 auto 36px;
+      line-height: 1.75;
+    }
+
+    /* ── TICKET SECTION (OnTreasure embed) ──
+       Redesigned to feel integrated into the page flow like
+       703collectors.com: clean white background, bold red/black
+       typography, iframe sits in a soft card that blends in. */
+    .ticket-section {
+      background: var(--white);
+      padding: 100px 24px;
+      position: relative; overflow: hidden;
+    }
+    /* Subtle red corner accent line for visual interest */
+    .ticket-section::before {
+      content: ""; position: absolute; left: 0; right: 0; top: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent) 0%, var(--accent-dark) 50%, var(--accent) 100%);
+    }
+    .ticket-section-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1.4fr;
+      gap: 60px; align-items: center; position: relative; z-index: 1;
+    }
+    .ticket-section-header { display: flex; flex-direction: column; }
+    .ticket-eyebrow {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-size: .75rem; font-weight: 800; letter-spacing: .22em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 22px;
+      align-self: flex-start;
+    }
+    .pulse-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0;
+      animation: goldPulse 1.8s ease-out infinite;
+    }
+    @keyframes goldPulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(185,28,28,.7); }
+      50%      { box-shadow: 0 0 0 8px rgba(185,28,28,0); }
+    }
+    .ticket-section-title {
+      font-family: 'Bebas Neue', 'Impact', sans-serif;
+      font-size: clamp(2.6rem, 4.5vw, 4rem); font-weight: 400;
+      letter-spacing: .03em; line-height: .95; color: var(--ink); margin-bottom: 14px;
+    }
+    /* Make a portion of the title pop in red */
+    .ticket-section-title span { color: var(--accent); }
+    /* Dynamic event name shown below the static GET YOUR TICKETS TODAY headline */
+    .ticket-event-name {
+      font-size: 1.1rem; font-weight: 700; color: #444; line-height: 1.3;
+      margin-bottom: 26px; letter-spacing: .01em;
+    }
+    .ticket-event-details { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+    .ted-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: .95rem; color: #444; line-height: 1.5;
+    }
+    .ted-item i { color: var(--accent); font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+    .ticket-note {
+      font-size: .9rem; color: #666; line-height: 1.6;
+      margin-top: 18px; display: flex; align-items: flex-start; gap: 8px;
+      padding: 14px 18px; background: rgba(185,28,28,0.06); border-radius: 12px;
+      border-left: 3px solid var(--accent);
+    }
+    .ticket-note i { color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+    .ticket-note strong { color: var(--ink); }
+
+    /* OnTreasure iframe — clean integrated card */
+    .ontreasure-embed {
+      background: var(--white);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.12);
+      border: 1px solid var(--soft-border);
+      min-height: 700px;
+    }
+    .ontreasure-embed iframe { display: block; width: 100%; min-height: 700px; border: none; }
+    .embed-fallback {
+      display: none; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center; padding: 60px 32px; gap: 16px;
+      background: var(--light-bg); border-radius: 20px; border: 1px solid var(--soft-border);
+    }
+    .embed-fallback i { font-size: 3rem; color: var(--accent); }
+    .embed-fallback p { font-size: .95rem; color: #555; }
+
+    /* GET TICKETS button — bold red pill, blends with theme */
+    .btn-tickets {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 16px 32px; border-radius: 999px;
+      background: var(--accent);
+      color: #fff; font-weight: 800; font-size: 1rem;
+      text-decoration: none; letter-spacing: .02em;
+      box-shadow: 0 12px 30px rgba(185,28,28,.30);
+      transition: transform .25s, box-shadow .25s, background .25s;
+      border: none; cursor: pointer; font-family: inherit; align-self: flex-start;
+    }
+    .btn-tickets:hover {
+      background: var(--accent-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 18px 40px rgba(185,28,28,.45);
+    }
+    .btn-tickets i { font-size: 1.1rem; }
+
+
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      background: var(--white);
+      border-bottom: 1px solid var(--soft-border);
+      padding: 0;
+    }
+
+    .stats-row-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .stat-block {
+      padding: 36px 24px;
+      text-align: center;
+      border-right: 1px solid var(--soft-border);
+    }
+
+    .stat-block:last-child { border-right: none; }
+
+    .stat-num {
+      font-family: 'Bebas Neue', 'Impact', sans-serif;
+      font-size: 3rem;
+      letter-spacing: .03em;
+      background: linear-gradient(135deg, var(--accent), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-lbl {
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: #889;
+    }
+
+    /* ── WHAT WE CARRY ── */
+    .section {
+      padding: 90px 24px;
+      border-top: 1px solid var(--soft-border);
+    }
+    .section.white { background: var(--white); }
+    .section.gray  { background: var(--light-bg); }
+    .section.dark  {
+      background: #080812;
+      border-top: none;
+    }
+
+    .section-label {
+      display: block;
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+      padding-left: 18px;
+      position: relative;
+    }
+    .section-label::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 50%;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      transform: translateY(-50%);
+    }
+
+    .section-heading {
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1.1;
+      margin-bottom: 14px;
+    }
+
+    .section.dark .section-heading,
+    .section.dark .section-label { color: #fff; }
+
+    /* ── CARRY GRID ── */
+    .carry-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .carry-card {
+      background: var(--white);
+      border: 1px solid var(--soft-border);
+      border-radius: 20px;
+      padding: 28px 20px 24px;
+      text-align: center;
+      transition: transform .3s, box-shadow .3s, border-color .3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Top color bar unique to each TCG */
+    .carry-card::before {
+      content: "";
+      display: block;
+      height: 3px;
+      border-radius: 999px;
+      margin: 0 auto 20px;
+      width: 36px;
+    }
+
+    .carry-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--card-shadow);
+      border-color: rgba(185,28,28,.3);
+    }
+
+    .carry-icon { font-size: 2.4rem; display: block; margin-bottom: 12px; }
+    .carry-name { font-weight: 800; font-size: .97rem; color: var(--ink); margin-bottom: 5px; }
+    .carry-desc { font-size: .8rem; color: #889; line-height: 1.5; }
+
+    .cat-pokemon::before  { background: #FFCB05; }
+    .cat-onepiece::before { background: #e53e3e; }
+    .cat-dragonball::before { background: #f6ad55; }
+    .cat-yugioh::before   { background: #6b46c1; }
+    .cat-slabs::before    { background: #2b6cb0; }
+    .cat-sealed::before   { background: #276749; }
+    .cat-accessories::before { background: #c53030; }
+    .cat-vintage::before  { background: #718096; }
+
+    /* ── FEATURE SPLIT ── */
+    .feature-split {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .feature-split.flip { direction: rtl; }
+    .feature-split.flip > * { direction: ltr; }
+
+    .feature-photo {
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+    }
+
+    .feature-photo img {
+      width: 100%;
+      height: 380px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-placeholder {
+      width: 100%;
+      height: 380px;
+      background: linear-gradient(135deg, #1a0f2e, #0f2040);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,.2);
+      font-size: .85rem;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .feature-text { display: flex; flex-direction: column; gap: 16px; }
+
+    .check-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .check-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: .93rem;
+      color: #445;
+      line-height: 1.5;
+    }
+
+    .check-list li i {
+      color: var(--accent);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── PRICING ── */
+    .pricing-grid {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+    }
+
+    .price-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 36px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: transform .3s, box-shadow .3s;
+    }
+
+    .price-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+    }
+
+    .price-card.featured {
+      background: rgba(185,28,28,0.15);
+      border-color: rgba(185,28,28,0.5);
+    }
+
+    .price-badge {
+      position: absolute;
+      top: 20px; right: -28px;
+      background: var(--accent);
+      color: #fff;
+      font-size: .65rem;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 5px 44px;
+      transform: rotate(32deg);
+    }
+
+    .price-tier {
+      font-size: .7rem;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    .price-amount {
+      font-family: 'Bebas Neue', 'Impact', sans-serif;
+      font-size: 3.5rem;
+      letter-spacing: .03em;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .price-amount small {
+      font-family: inherit;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,.4);
+    }
+
+    .price-desc {
+      font-size: .85rem;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .price-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-bottom: 28px;
+    }
+
+    .price-features li {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: .85rem;
+      color: rgba(255,255,255,.75);
+    }
+
+    .price-features li i { color: var(--gold); flex-shrink: 0; }
+
+    /* ── STEPS ── */
+    .steps-row {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      counter-reset: steps;
+    }
+
+    .step {
+      background: var(--white);
+      border: 1px solid var(--soft-border);
+      border-radius: 20px;
+      padding: 30px 24px;
+      position: relative;
+      counter-increment: steps;
+      transition: transform .3s, box-shadow .3s;
+    }
+
+    .step:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 14px 36px rgba(0,0,0,0.08);
+    }
+
+    .step::after {
+      content: counter(steps, decimal-leading-zero);
+      position: absolute;
+      top: 18px; right: 18px;
+      font-size: 2rem;
+      font-weight: 900;
+      color: rgba(185,28,28,.1);
+      line-height: 1;
+    }
+
+    .step-icon { font-size: 1.8rem; color: var(--accent); margin-bottom: 12px; }
+    .step-title { font-weight: 800; font-size: .97rem; margin-bottom: 6px; color: var(--ink); }
+    .step-desc { font-size: .85rem; color: #778; line-height: 1.6; }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 30px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      font-size: .95rem;
+      text-decoration: none;
+      transition: background .25s, transform .25s, box-shadow .25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 14px 32px rgba(185,28,28,.4);
+    }
+
+    .btn-outline-light {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 28px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.85);
+      font-weight: 600;
+      font-size: .95rem;
+      text-decoration: none;
+      transition: border-color .25s, color .25s, transform .25s;
+    }
+
+    .btn-outline-light:hover {
+      border-color: rgba(255,255,255,.8);
+      color: #fff;
+      transform: translateY(-3px);
+    }
+
+    /* ── CTA BAND ── */
+    .cta-band {
+      background: var(--white);
+      border-top: 1px solid var(--soft-border);
+      padding: 80px 24px;
+    }
+
+    .cta-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .cta-text h2 {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .cta-text p { color: #556; max-width: 480px; }
+
+    /* ── FADE UP ── */
+    .fade-up { opacity: 0; transform: translateY(36px); transition: opacity .8s ease, transform .8s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .fade-up:nth-child(2) { transition-delay: .08s; }
+    .fade-up:nth-child(3) { transition-delay: .16s; }
+    .fade-up:nth-child(4) { transition-delay: .24s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .ticket-section-inner { grid-template-columns: 1fr; }
+      .stats-row-inner { grid-template-columns: repeat(2, 1fr); }
+      .stat-block:nth-child(2) { border-right: none; }
+      .feature-split { grid-template-columns: 1fr; gap: 32px; }
+      .feature-split.flip { direction: ltr; }
+      .cta-inner { flex-direction: column; text-align: center; }
+    }
+
+    @media (max-width: 600px) {
+      .stats-row-inner { grid-template-columns: repeat(2, 1fr); }
+      .vend-hero { min-height: auto; padding: 110px 20px 60px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileNav()"></div>
+
+  <!-- HEADER -->
+  <header>
+    <a class="brand" href="index.html">Apex <span>Events LLC</span></a>
+    <nav class="desktop-nav">
+      <a href="index.html">Home</a>
+      <a href="events.html">Events</a>
+      <a href="vending.html" class="active">Vending</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <a href="https://www.instagram.com/apexcardshow/" target="_blank" class="header-social" aria-label="Instagram">
+        <i class="ph ph-instagram-logo"></i>
+      </a>
+      <a href="https://www.facebook.com/people/Apex-Card-Show/61580704702168/?mibextid=wwXIfr&rdid=xxdHKMl7f3QbmXjg&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F18RZbv8b7E%2F%3Fmibextid%3DwwXIfr" target="_blank" class="header-social" aria-label="Facebook">
+        <i class="ph ph-facebook-logo"></i>
+      </a>
+      <button class="mobile-toggle" aria-label="Open navigation" onclick="openMobileNav()">
+        <span class="bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MOBILE NAV -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
+    <button class="mobile-nav-close" aria-label="Close navigation" onclick="closeMobileNav()">&times;</button>
+    <span class="mobile-nav-label">Navigation</span>
+    <a href="index.html" onclick="closeMobileNav()">Home</a>
+    <a href="events.html" onclick="closeMobileNav()">Events</a>
+    <a href="vending.html" class="active" onclick="closeMobileNav()">Vending</a>
+    <a href="about.html" onclick="closeMobileNav()">About</a>
+    <a href="contact.html" onclick="closeMobileNav()">Contact</a>
+    <div class="mobile-nav-cta">
+      <a href="contact.html" onclick="closeMobileNav()">Let's Connect! →</a>
+    </div>
+  </nav>
+
+
+  <main style="padding-top: 64px;">
+
+    <!-- ════════════════════════════════
+         HERO
+    ════════════════════════════════ -->
+    <section class="vend-hero">
+      <div class="hero-content">
+        <span class="hero-eyebrow">Apex · Vending</span>
+        <h1>LOCK IN<br/><span>YOUR TABLE</span></h1>
+        <p class="hero-sub"> Standby for our drops, secure your spot.</p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+          <a href="#pricing" class="btn-tickets">
+             Get Table
+          </a>
+          <a href="#information" class="btn-outline-light">
+            See How It Works ↓
+          </a>
+        </div>
+      </div>
+    </section>
+
+
+    
+
+
+
+
+    <!-- ════════════════════════════════
+         STATS ROW
+    ════════════════════════════════ -->
+    <!----<div class="stats-row">
+      <div class="stats-row-inner">
+        <div class="stat-block fade-up">
+          <div class="stat-num">80+</div>
+          <div class="stat-lbl">Vendors per Show</div>
+        </div>
+        <div class="stat-block fade-up">
+          <div class="stat-num">10K+</div>
+          <div class="stat-lbl">Cards Available</div>
+        </div>
+        <div class="stat-block fade-up">
+          <div class="stat-num">$1500</div>
+          <div class="stat-lbl">APEX Cash</div>
+        </div>
+        <div class="stat-block fade-up">
+          <div class="stat-num">200%</div>
+          <div class="stat-lbl">Collector Focused</div>
+        </div>
+      </div>
+    </div>
+
+
+    
+
+    <!-- ════════════════════════════════
+         FEATURE SPLIT — Inventory Detail
+    ════════════════════════════════ -->
+    <section class="section gray">
+      <div class="feature-split fade-up">
+
+        <div class="feature-photo">
+          <!-- replaced photo placeholder with video, same pattern as hero slides -->
+          <video
+            src="media/Sile1.mov"
+            autoplay
+            muted
+            loop
+            playsinline
+            style="width:100%; height: 500px;; object-fit:cover; border-radius:24px;">
+          </video>
+        </div>
+
+        <div class="feature-text">
+          <span class="section-label">Our Shows</span>
+          <h2 class="section-heading">Something for every collector.</h2>
+          <ul class="check-list">
+            <li>
+              <i class="ph ph-check-circle-fill"></i>
+              <span><strong>Sealed Products</strong> — ETBs, booster boxes, tins, and premium collections for collectors who love ripping packs or stashing sealed displays.</span>
+            </li>
+            <li>
+              <i class="ph ph-check-circle-fill"></i>
+              <span><strong>PSA / BGS Slabs</strong> — Professionally graded, verified case integrity.</span>
+            </li>
+            <li>
+              <i class="ph ph-check-circle-fill"></i>
+              <span><strong>Binders & Sleeves</strong> — Dragon Shield, Ultimate Guard, and KMC in stock.</span>
+            </li>
+            <li>
+              <i class="ph ph-check-circle-fill"></i>
+              <span><strong>Vintage Sets</strong> — Base Set, Jungle, Fossil, and other legacy Pokémon sets.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+     <!-- ════════════════════════════════
+         HOW IT WORKS
+    ════════════════════════════════ -->
+    <section class="section white" id="information">
+      <div style="max-width:1100px;margin:0 auto 48px;text-align:center;" class="fade-up">
+        <span class="section-label">How It Works</span>
+        <h2 class="section-heading">Ready to vend with Apex?</h2>
+      </div>
+
+      <div class="steps-row">
+        <div class="step fade-up">
+          <div class="step-icon"><i class="ph ph-envelope-simple"></i></div>
+          <div class="step-title">Apply Online</div>
+          <div class="step-desc">Fill out our short vendor application via the Contact page. Tell us what you sell and what table size you need.</div>
+        </div>
+        <div class="step fade-up">
+          <div class="step-icon"><i class="ph ph-check-circle"></i></div>
+          <div class="step-title">Get Approved</div>
+          <div class="step-desc">We review within 48 hours and confirm your spot by email. Tables are first-come, first-served.</div>
+        </div>
+        <div class="step fade-up">
+          <div class="step-icon"><i class="ph ph-credit-card"></i></div>
+          <div class="step-title">Pay & Confirm</div>
+          <div class="step-desc">Pay your table fee to lock in your spot. Payment details are included in your approval email.</div>
+        </div>
+        <div class="step fade-up">
+          <div class="step-icon"><i class="ph ph-storefront"></i></div>
+          <div class="step-title">Show Up & Sell</div>
+          <div class="step-desc">Arrive during load-in, set up, and meet hundreds of collectors ready to buy. It really is that simple.</div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- ════════════════════════════════
+         VENDOR TABLE PRICING — dark section
+    ════════════════════════════════ -->
+    <section class="section dark" id="pricing">
+      <div style="max-width:1100px;margin:0 auto 52px;text-align:center;" class="fade-up">
+        <span class="section-label" style="color:var(--gold);">Vendor Tables</span>
+        <h2 class="section-heading" style="color:#fff;">Book your table at Apex.</h2>
+        <p style="font-size:1rem;color:rgba(255,255,255,.45);max-width:500px;margin:0 auto;line-height:1.7;">
+          Three tiers designed for solo sellers, growing shops, and established dealers.
+        </p>
+      </div>
+
+      <div class="pricing-grid">
+
+        <!-- Solo -->
+        <div class="price-card fade-up">
+          <div class="price-tier">Garden Exchange</div>
+          <div class="price-amount">$80<small> / table</small></div>
+          <div class="price-desc">Perfect for individual collectors looking to move inventory.</div>
+          <ul class="price-features">
+            <li><i class="ph ph-check"></i> 1 standard 6ft table</li>
+            <li><i class="ph ph-check"></i> 2 vendor chairs</li>
+            <li><i class="ph ph-check"></i> Load-in area access</li>
+            <li><i class="ph ph-check"></i> Listed in event program</li>
+          </ul>
+          <a href="contact.html" class="btn-primary" style="width:100%;justify-content:center;">Apply Now →</a>
+        </div>
+
+        <!-- Double — featured -->
+        <div class="price-card featured fade-up">
+          
+          <div class="price-tier">Summer Social</div>
+          <div class="price-amount">$95<small> / table</small></div>
+          <div class="price-desc">Best value for dealers who need room to display properly.</div>
+          <ul class="price-features">
+            <li><i class="ph ph-check"></i> 2 side-by-side 6ft tables</li>
+            <li><i class="ph ph-check"></i> 4 vendor chairs</li>
+            <li><i class="ph ph-check"></i> Priority load-in access</li>
+            <li><i class="ph ph-check"></i> Social media shoutout</li>
+            <li><i class="ph ph-check"></i> Featured in event program</li>
+          </ul>
+          <a href="contact.html" class="btn-primary" style="width:100%;justify-content:center;">Apply Now →</a>
+        </div>
+
+        <!-- Sponsor -->
+        <div class="price-card fade-up">
+          <div class="price-badge"> Stay Tuned</div>
+          <div class="price-tier">Infernofest</div>
+          <div class="price-amount">$110<small> / table</small></div>
+          <div class="price-desc">Maximum exposure for shops and brands making a statement.</div>
+          <ul class="price-features">
+            <li><i class="ph ph-check"></i> 1 premium Booth</li>
+            <li><i class="ph ph-check"></i> Logo on event banner</li>
+            <li><i class="ph ph-check"></i> Featured vendor spotlight post</li>
+            <li><i class="ph ph-check"></i> Dedicated corner placement</li>
+            <li><i class="ph ph-check"></i> Early-bird setup access</li>
+          </ul>
+          <a href="contact.html" class="btn-primary" style="width:100%;justify-content:center;">Apply Now →</a>
+        </div>
+
+      </div>
+    </section>
+
+
+   
+
+    <!-- ════════════════════════════════
+         CTA BAND
+    ════════════════════════════════ -->
+    
+
+  </main>
+
+
+   <footer>
+    <!-- Updated footer from placeholder portfolio text to Apex Card Show branding -->
+
+    <!-- Social media icons row - matches the 703 footer style.
+         Linked to Apex Card Show's Instagram and Facebook accounts. -->
+    <div class="footer-social">
+      <a href="https://www.instagram.com/apexcardshow/" target="_blank" aria-label="Instagram">
+        <i class="ph ph-instagram-logo"></i>
+      </a>
+      <a href="https://www.facebook.com/people/Apex-Card-Show/61580704702168/?mibextid=wwXIfr&rdid=xxdHKMl7f3QbmXjg&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F18RZbv8b7E%2F%3Fmibextid%3DwwXIfr"
+        target="_blank" aria-label="Facebook">
+        <i class="ph ph-facebook-logo"></i>
+      </a>
+    </div>
+
+    <p>© 2026 <strong style="color:rgba(255,255,255,.75);">Apex Events LLC</strong> &middot; Apex Card Show &middot; All
+      Rights Reserved</p>
+    <!-- Removed the reduced-motion link as it was a portfolio-specific feature -->
+    <p style="margin-top:8px;font-size:.85rem;opacity:.7;">
+      <a href="events.html" style="color:inherit;text-decoration:underline;">Events</a>
+      &nbsp;·&nbsp;
+      <a href="vending.html" style="color:inherit;text-decoration:underline;">Vending</a>
+      &nbsp;·&nbsp;
+      <a href="about.html" style="color:inherit;text-decoration:underline;">About</a>
+      &nbsp;·&nbsp;
+      <a href="contact.html" style="color:inherit;text-decoration:underline;">Contact</a>
+    </p>
+  </footer>
+
+
+  <script>
+    // ── MOBILE NAVIGATION ─────────────────────────────────────────
+    function openMobileNav() {
+      document.getElementById('mobileNav').classList.add('open');
+      document.getElementById('mobileOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMobileNav() {
+      document.getElementById('mobileNav').classList.remove('open');
+      document.getElementById('mobileOverlay').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeMobileNav();
+    });
+
+    // ── SMOOTH SCROLL ─────────────────────────────────────────────
+    var whatWeCarry = document.querySelector('a[href="#what-we-carry"]');
+    if (whatWeCarry) {
+      whatWeCarry.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('what-we-carry').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    // ── SCROLL FADE-UP ANIMATIONS ─────────────────────────────────
+    const observer = new IntersectionObserver(
+      function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+    );
+    document.querySelectorAll('.fade-up').forEach(function(el) {
+      observer.observe(el);
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<!-- Contact page for Apex Card Show — contact form, social links, FAQ, and location info -->
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> Contact |Apex Card Show</title>
+
+  <link rel="icon" type="image/png" href="images/apexlogo3d.png"/>
+  <link rel="stylesheet" href="css/contact.css" />
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <!-- Page-specific styles for the Contact page -->
+  <style>
+
+    /* ── PAGE HERO ────────────────────────────────────────────────
+       Contact page uses a deep emerald/green gradient for a fresh,
+       welcoming feel that differentiates it from the other pages. */
+    .page-hero {
+      background: linear-gradient(160deg, #0a0a0a 0%, #001f15 50%, #002211 100%);
+      padding: 100px 24px 70px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(16,185,129,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16,185,129,0.07) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    .page-hero::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(16,185,129,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .page-hero-eyebrow {
+      display: inline-block;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #fff;
+      background: rgba(16,185,129,0.18);
+      border: 1px solid rgba(16,185,129,0.4);
+      padding: 5px 16px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      letter-spacing: -.02em;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(130deg, #ffffff 40%, rgba(110,231,183,0.9));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-hero p {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: rgba(255,255,255,0.6);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── CONTACT LAYOUT ──────────────────────────────────────────
+       Two-column layout: form on left, info panels on right.
+       On mobile both stack to a single column. */
+    .contact-layout {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      /* 3fr for the form, 2fr for the sidebar */
+      grid-template-columns: 3fr 2fr;
+      gap: 56px;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 900px) {
+      /* Stack columns on tablet and mobile */
+      .contact-layout {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+    }
+
+    /* ── CONTACT FORM ────────────────────────────────────────────
+       The main inquiry form — handles general questions, vendor
+       applications, and event attendance inquiries. */
+    .contact-form-card {
+      background: var(--white);
+      border: 1px solid var(--soft-border);
+      border-radius: 24px;
+      padding: 40px 36px;
+    }
+
+    .contact-form-card h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .contact-form-card > p {
+      color: #778;
+      font-size: .93rem;
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    /* Form field group — label + input stacked vertically */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: .83rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 7px;
+      letter-spacing: .02em;
+    }
+
+    /* Required field star */
+    .form-label .required {
+      color: var(--accent);
+      margin-left: 2px;
+    }
+
+    /* Shared input / select / textarea styles */
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid var(--soft-border);
+      border-radius: 12px;
+      background: var(--white);
+      font-size: .95rem;
+      font-family: inherit;
+      color: var(--ink);
+      outline: none;
+      transition: border-color .25s, box-shadow .25s;
+      /* Removes default browser appearance from select */
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    /* Focus ring — accent color border and subtle glow */
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(185,28,28,0.10);
+    }
+
+    /* Textarea — taller than regular inputs */
+    .form-textarea {
+      min-height: 140px;
+      resize: vertical; /* Only allow vertical resize — horizontal breaks layout */
+    }
+
+    /* Two-column row for name fields */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 500px) {
+      /* Stack name fields on very small screens */
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    /* Custom select dropdown arrow — replaces the browser default */
+    .form-select-wrapper {
+      position: relative;
+    }
+
+    .form-select-wrapper::after {
+      content: "";
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid #aab;
+      pointer-events: none; /* Arrow never intercepts clicks */
+    }
+
+    /* Checkbox group for "I am a:" selector */
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    /* Custom styled checkbox pill */
+    .checkbox-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 16px;
+      border: 1.5px solid var(--soft-border);
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: .87rem;
+      font-weight: 600;
+      color: #556;
+      transition: border-color .2s, background .2s, color .2s;
+      user-select: none;
+    }
+
+    /* Hide the actual checkbox input — style the label instead */
+    .checkbox-pill input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    /* When the hidden checkbox is checked, style the label */
+    .checkbox-pill:has(input:checked) {
+      border-color: var(--accent);
+      background: rgba(185,28,28,0.07);
+      color: var(--accent);
+    }
+
+    /* Submit button — full width, matches btn-primary style */
+    .form-submit {
+      width: 100%;
+      padding: 15px;
+      border-radius: 12px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      font-family: inherit;
+      border: none;
+      cursor: pointer;
+      transition: background .25s, transform .25s, box-shadow .25s;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .form-submit:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(185,28,28,0.35);
+    }
+
+    /* Success message — shown after form submission */
+    .form-success {
+      display: none; /* Hidden by default; JS shows it on submit */
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.3);
+      border-radius: 12px;
+      padding: 20px 22px;
+      color: #065f46;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .form-success i {
+      font-size: 1.6rem;
+      display: block;
+      margin-bottom: 8px;
+      color: #10b981;
+    }
+
+    /* ── CONTACT SIDEBAR ─────────────────────────────────────────
+       Right column — contact cards, social links, and quick info. */
+    .contact-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Individual info card */
+    .info-card {
+      background: var(--white);
+      border: 1px solid var(--soft-border);
+      border-radius: 20px;
+      padding: 24px 22px;
+      transition: transform .3s ease, box-shadow .3s ease;
+    }
+
+    .info-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+    }
+
+    /* Icon + title row at the top of each card */
+    .info-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    /* Icon circle background */
+    .info-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(185,28,28,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .info-card-title {
+      font-weight: 800;
+      font-size: .95rem;
+      color: var(--ink);
+    }
+
+    .info-card-body {
+      font-size: .88rem;
+      color: #667;
+      line-height: 1.65;
+    }
+
+    /* Clickable link inside info card body */
+    .info-card-body a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .info-card-body a:hover { text-decoration: underline; }
+
+    /* ── SOCIAL LINKS CARD ────────────────────────────────────────
+       Row of large social icon links */
+    .social-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    /* Individual social button */
+    .social-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 12px;
+      background: #f4f5f9;
+      color: #556;
+      font-size: .85rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background .2s, color .2s, transform .2s;
+    }
+
+    .social-btn i {
+      font-size: 1.1rem;
+    }
+
+    .social-btn:hover {
+      transform: translateY(-3px);
+    }
+
+    /* Platform-specific hover colors */
+    .social-btn.instagram:hover { background: #e1306c; color: #fff; }
+    .social-btn.tiktok:hover    { background: #010101; color: #fff; }
+    .social-btn.youtube:hover   { background: #ff0000; color: #fff; }
+    .social-btn.twitter:hover   { background: #1da1f2; color: #fff; }
+    .social-btn.facebook:hover  { background: #1877f2; color: #fff; }
+
+    /* ── RESPONSE TIME INDICATOR ─────────────────────────────────
+       Shows estimated reply time — builds trust and sets expectations */
+    .response-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: .78rem;
+      font-weight: 700;
+      color: #10b981;
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.25);
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-top: 12px;
+    }
+
+    /* Pulsing green dot indicates "online / active" */
+    .response-badge::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      animation: pulse-glow 2s ease-out infinite; /* keyframe from index.css */
+    }
+
+    /* ── FAQ SECTION ─────────────────────────────────────────────
+       Accordion-style FAQ so visitors can quickly find answers
+       without needing to send a message. */
+    .faq-list {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Each question-answer pair */
+    .faq-item {
+      background: var(--white);
+      border: 1px solid var(--soft-border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    /* Question row — clickable to toggle the answer */
+    .faq-question {
+      width: 100%;
+      padding: 18px 22px;
+      background: none;
+      border: none;
+      text-align: left;
+      font-family: inherit;
+      font-size: .97rem;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: background .2s;
+    }
+
+    .faq-question:hover {
+      background: rgba(185,28,28,0.04);
+    }
+
+    /* Plus/minus icon — rotates when open */
+    .faq-icon {
+      color: var(--accent);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      transition: transform .3s ease;
+    }
+
+    /* Rotate the icon when the FAQ item is open */
+    .faq-item.open .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    /* Answer panel — hidden by default, revealed by JavaScript */
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .4s ease, padding .4s ease;
+    }
+
+    /* Open state — expands to show the answer */
+    .faq-item.open .faq-answer {
+      max-height: 400px; /* Large enough for any answer */
+    }
+
+    .faq-answer-inner {
+      padding: 0 22px 20px;
+      font-size: .92rem;
+      color: #556;
+      line-height: 1.75;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileNav()"></div>
+
+
+  <!-- ============================================================
+    HEADER — "Contact" link is active on this page
+  ============================================================ -->
+  <header>
+    <a class="brand" href="index.html">Apex <span>Events LLC</span></a>
+    <nav class="desktop-nav">
+      <a href="index.html">Home</a>
+      <a href="events.html">Events</a>
+      <a href="vending.html">Vending</a>
+      <a href="about.html">About</a>
+      <!-- class="active" marks Contact as the current page -->
+      <a href="contact.html" class="active">Contact</a>
+    </nav>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <a href="https://www.instagram.com/apexcardshow/" target="_blank" class="header-social" aria-label="Instagram">
+        <i class="ph ph-instagram-logo"></i>
+      </a>
+      <a href="https://www.facebook.com/people/Apex-Card-Show/61580704702168/?mibextid=wwXIfr&rdid=xxdHKMl7f3QbmXjg&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F18RZbv8b7E%2F%3Fmibextid%3DwwXIfr" target="_blank" class="header-social" aria-label="Facebook">
+        <i class="ph ph-facebook-logo"></i>
+      </a>
+      <button class="mobile-toggle" aria-label="Open navigation" onclick="openMobileNav()">
+        <span class="bar"></span>
+      </button>
+    </div>
+  </header>
+
+
+  <!-- Mobile Nav -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
+    <button class="mobile-nav-close" aria-label="Close navigation" onclick="closeMobileNav()">&times;</button>
+    <span class="mobile-nav-label">Navigation</span>
+    <a href="index.html" onclick="closeMobileNav()">Home</a>
+    <a href="events.html" onclick="closeMobileNav()">Events</a>
+    <a href="vending.html" onclick="closeMobileNav()">Vending</a>
+    <a href="about.html" onclick="closeMobileNav()">About</a>
+    <a href="contact.html" class="active" onclick="closeMobileNav()">Contact</a>
+    <div class="mobile-nav-cta">
+      <a href="contact.html" onclick="closeMobileNav()">Let's Connect! →</a>
+    </div>
+  </nav>
+
+
+  <main style="padding-top: 64px;">
+
+    <!-- Page Hero — green theme for Contact -->
+    <section class="page-hero">
+      <span class="page-hero-eyebrow">Get · In · Touch</span>
+      <h1>Contact Us</h1>
+      <p>Have questions about our events, want to vend at a show, or just want to say hey? We're here for it — reach out below.</p>
+    </section>
+
+
+    <!-- ============================================================
+      CONTACT MAIN SECTION — Form + Sidebar
+      ============================================================
+    ============================================================ -->
+    <section class="section white">
+      <div class="contact-layout fade-up">
+
+        <!-- ── LEFT COLUMN: CONTACT FORM ────────────────────── -->
+        <div class="contact-form-card">
+          <h2>Send us a message</h2>
+          <p>Whether you're a collector, vendor, sponsor, or curious newcomer — fill out the form and we'll get back to you within 48 hours.</p>
+
+          <!-- Contact form — action="#" keeps user on the page for demo;
+               replace with a real form handler (Netlify Forms, Formspree, etc.)
+               for a live deployment. -->
+          <form id="contactForm" action="#" onsubmit="handleFormSubmit(event)">
+
+            <!-- Name row — first and last side by side -->
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="firstName">
+                  First Name <span class="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="firstName"
+                  class="form-input"
+                  placeholder="Ash"
+                  required
+                  autocomplete="given-name"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="lastName">
+                  Last Name <span class="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  class="form-input"
+                  placeholder="Ketchum"
+                  required
+                  autocomplete="family-name"
+                />
+              </div>
+            </div>
+
+            <!-- Email field -->
+            <div class="form-group">
+              <label class="form-label" for="email">
+                Email Address <span class="required">*</span>
+              </label>
+              <input
+                type="email"
+                id="email"
+                class="form-input"
+                placeholder="your@email.com"
+                required
+                autocomplete="email"
+              />
+            </div>
+
+            <!-- Phone field — optional -->
+            <div class="form-group">
+              <label class="form-label" for="phone">Phone Number <span style="color:#aab;font-weight:500;">(optional)</span></label>
+              <input
+                type="tel"
+                id="phone"
+                class="form-input"
+                placeholder="(281) 330-8004"
+                autocomplete="tel"
+              />
+            </div>
+
+            <!-- Inquiry type — dropdown select -->
+            <div class="form-group">
+              <label class="form-label" for="inquiryType">
+                What's your inquiry about? <span class="required">*</span>
+              </label>
+              <div class="form-select-wrapper">
+                <select id="inquiryType" class="form-select" required>
+                  <option value="" disabled selected>Please select a topic…</option>
+                  <option value="event">Event Attendance / Tickets</option>
+                  <option value="vendor">Vending / Table Booking</option>
+                  <option value="sponsor">Sponsorship Opportunity</option>
+                  <option value="media">Media / Content Collaboration</option>
+                  <option value="general">General Question</option>
+                  <option value="other">Something Else</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- "I am a:" checkbox pills -->
+            <div class="form-group">
+              <label class="form-label">I am a: <span style="color:#aab;font-weight:500;">(check all that apply)</span></label>
+              <div class="checkbox-group">
+                <label class="checkbox-pill">
+                  <input type="checkbox" name="role" value="collector" />
+                  <i class="ph ph-cards"></i> Collector
+                </label>
+                <label class="checkbox-pill">
+                  <input type="checkbox" name="role" value="vendor" />
+                  <i class="ph ph-storefront"></i> Vendor
+                </label>
+                <label class="checkbox-pill">
+                  <input type="checkbox" name="role" value="newcomer" />
+                  <i class="ph ph-star"></i> New to TCG
+                </label>
+                <label class="checkbox-pill">
+                  <input type="checkbox" name="role" value="sponsor" />
+                  <i class="ph ph-handshake"></i> Sponsor / Brand
+                </label>
+              </div>
+            </div>
+
+            <!-- Message textarea -->
+            <div class="form-group">
+              <label class="form-label" for="message">
+                Your Message <span class="required">*</span>
+              </label>
+              <textarea
+                id="message"
+                class="form-textarea"
+                placeholder="Tell us what's on your mind. The more detail the better!"
+                required
+              ></textarea>
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit" class="form-submit">
+              <i class="ph ph-paper-plane-tilt"></i>
+              Send Message
+            </button>
+
+          </form>
+
+          <!-- Success message — hidden until form is submitted -->
+          <div class="form-success" id="formSuccess">
+            <i class="ph ph-check-circle"></i>
+            Message sent! We'll get back to you as soon as we can, within 48 hours.
+          </div>
+
+        </div><!-- end .contact-form-card -->
+
+
+        <!-- ── RIGHT COLUMN: SIDEBAR ─────────────────────────── -->
+        <div class="contact-sidebar">
+
+          <!-- Response time badge -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <div class="info-card-icon"><i class="ph ph-clock"></i></div>
+              <div class="info-card-title">Response Time</div>
+            </div>
+            <div class="info-card-body">
+              We aim to respond to all messages within <strong>48 hours</strong> on business days. For urgent vendor inquiries, email us directly.
+              <br/><br/>
+              <a href="mailto:apexcardshow@gmail.com">apexcardshow@gmail.com</a>
+            </div>
+            <div class="response-badge">Typically replies in &lt; 48 hrs</div>
+          </div>
+
+          <!-- Location info 
+          <div class="info-card">
+            <div class="info-card-header">
+              <div class="info-card-icon"><i class="ph ph-map-pin"></i></div>
+              <div class="info-card-title">Where We're Based</div>
+            </div>
+            <div class="info-card-body">
+              Based in the <strong>Northern Virginia / DMV</strong> area. Our events are held at venues across Fairfax County and Prince William County, VA.
+              <br/><br/>
+              Springfield, Woodbridge, Manassas, and Fairfax — watch our events page for exact addresses.
+            </div>
+          </div> -->
+
+          <!-- Social media card -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <div class="info-card-icon"><i class="ph ph-share-network"></i></div>
+              <div class="info-card-title">Follow Apex</div>
+            </div>
+            <div class="info-card-body" style="margin-bottom:14px;">
+              The fastest way to stay updated is to follow our social channels. We post event announcements, card pickups, giveaways.
+            </div>
+            <div class="social-links">
+              <!-- Replace # with real social media URLs -->
+              <a href="https://www.instagram.com/apexcardshow/" target="_blank" class="social-btn instagram" aria-label="Instagram">
+                <i class="ph ph-instagram-logo"></i> Instagram
+              </a>
+              <!---<a href="#" class="social-btn tiktok" aria-label="TikTok">
+                <i class="ph ph-tiktok-logo"></i> TikTok
+              </a>
+              <a href="#" class="social-btn youtube" aria-label="YouTube">
+                <i class="ph ph-youtube-logo"></i> YouTube
+              </a>
+              <a href="#" class="social-btn twitter" aria-label="Twitter / X">
+                <i class="ph ph-twitter-logo"></i> Twitter
+              </a -->
+              <a href="https://www.facebook.com/people/Apex-Card-Show/61580704702168/?mibextid=wwXIfr&rdid=xxdHKMl7f3QbmXjg&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F18RZbv8b7E%2F%3Fmibextid%3DwwXIfr" target="_blank" class="social-btn facebook" aria-label="Facebook">
+                <i class="ph ph-facebook-logo"></i> Facebook
+              </a>
+            </div>
+          </div>
+
+          <!-- Vendor-specific info card -->
+          <div class="info-card" style="border-color: rgba(185,28,28,0.35); background: rgba(185,28,28,0.04);">
+            <div class="info-card-header">
+              <div class="info-card-icon" style="background: rgba(185,28,28,0.15);">
+                <i class="ph ph-storefront"></i>
+              </div>
+              <div class="info-card-title">Vendor Applications</div>
+            </div>
+            <div class="info-card-body">
+              Interested in vending at Apex? Table spots fill up fast. Use the form to the left and select <strong>"Vending / Table Booking"</strong> — or visit our Vending page for pricing.
+              <br/><br/>
+              <a href="vending.html">View Table Pricing →</a>
+            </div>
+          </div>
+
+        </div><!-- end .contact-sidebar -->
+
+      </div><!-- end .contact-layout -->
+    </section>
+
+
+    <!-- ============================================================
+      FAQ SECTION
+      ============================================================
+      Accordion FAQ so visitors can self-serve common questions
+      before reaching out. JavaScript handles open/close below.
+    ============================================================ -->
+    <section class="section gray">
+      <div style="max-width:1180px;margin:0 auto 48px;text-align:center;" class="fade-up">
+        <span class="section-label">Quick Answers</span>
+        <h2 class="section-heading">Frequently asked questions.</h2>
+        <p class="section-sub" style="margin:0 auto;">Can't find what you're looking for? Use the contact form above and we'll help.</p>
+      </div>
+
+      <!-- FAQ accordion list -->
+      <div class="faq-list">
+
+        <!-- ── FAQ 1 ──────────────────────────────────────────── -->
+        <div class="faq-item fade-up">
+          <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            How much does it cost to attend an Apex Card Show?
+            <i class="ph ph-plus faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Most of our main card shows charge a small admission fee of $3–$5 to help cover venue costs. Community nights and smaller gatherings are typically free. The first 50 guests at ticketed shows also receive $10 in Apex Cash — so early arrival more than pays for the ticket. Check our Events page for specific pricing on each show.
+            </div>
+          </div>
+        </div>
+
+        <!-- ── FAQ 2 ──────────────────────────────────────────── -->
+        <div class="faq-item fade-up">
+          <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            How do I book a vendor table at an Apex event?
+            <i class="ph ph-plus faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Fill out the contact form on this page and select "Vending / Table Booking" as your inquiry type. Include what TCG products you sell and what size table you're looking for. We'll review your application within 48 hours and confirm availability. Table spots are limited and go fast — apply early. Visit our <a href="vending.html">Vending page</a> to see table tiers and pricing.
+            </div>
+          </div>
+        </div>
+
+        <!-- ── FAQ 3 ──────────────────────────────────────────── -->
+        <div class="faq-item fade-up">
+          <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            What TCG games are supported at Apex events?
+            <i class="ph ph-plus faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Our vendor tables typically cover Pokémon TCG, One Piece TCG, Dragon Ball Super Card Game, and Yu-Gi-Oh!. We also regularly have Lorcana, Flesh & Blood, and Magic: The Gathering product available depending on the show. Graded slabs (PSA, BGS, CGC) and sealed product are always well-represented across all games.
+            </div>
+          </div>
+        </div>
+
+        <!-- ── FAQ 4 ──────────────────────────────────────────── -->
+        <div class="faq-item fade-up">
+          <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            Is Apex Card Show beginner-friendly?
+            <i class="ph ph-plus faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Absolutely. We deliberately build Apex events to be welcoming to newcomers. Our vendors are collector-focused and patient with new hobbyists. Whether you've been collecting for 20 years or you're opening your first pack at the show — Apex is for you. We especially encourage younger collectors to attend with family.
+            </div>
+          </div>
+        </div>
+
+        <!-- ── FAQ 5 ──────────────────────────────────────────── -->
+        <div class="faq-item fade-up">
+          <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            Can I sell or trade cards as an attendee (not a vendor)?
+            <i class="ph ph-plus faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Attendee-to-attendee trading is welcome at Apex! Bring your binder, set up at a table in the community area, and make deals. However, if you plan to set up a full vendor table with product displays and regular sales, you'll need to book an official vendor spot so we can plan the floor layout appropriately.
+            </div>
+          </div>
+        </div>
+
+        <!-- ── FAQ 6 ──────────────────────────────────────────── -->
+        <div class="faq-item fade-up">
+          <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            How do I stay updated on new events and announcements?
+            <i class="ph ph-plus faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              The fastest way to stay in the loop is to follow Apex on Instagram and TikTok — we announce every event, giveaway, and vendor reveal there first. You can also sign up for email notifications on our Events page. We never spam; we only email when there's something worth knowing about.
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end .faq-list -->
+    </section>
+
+
+    <!-- CTA band — final call to action at the bottom of the page -->
+    <section class="cta-band">
+      <div class="cta-inner fade-up">
+        <div class="cta-text">
+          <h2>We can't wait to see you at the show.</h2>
+          <p>Follow us on social for the latest updates, giveaways, and behind-the-scenes content from the Apex crew.</p>
+        </div>
+        <a href="events.html" class="btn-primary">View Upcoming Events →</a>
+      </div>
+    </section>
+
+  </main>
+
+
+   <footer>
+    <!-- Updated footer from placeholder portfolio text to Apex Card Show branding -->
+
+    <!-- Social media icons row - matches the 703 footer style.
+         Linked to Apex Card Show's Instagram and Facebook accounts. -->
+    <div class="footer-social">
+      <a href="https://www.instagram.com/apexcardshow/" target="_blank" aria-label="Instagram">
+        <i class="ph ph-instagram-logo"></i>
+      </a>
+      <a href="https://www.facebook.com/people/Apex-Card-Show/61580704702168/?mibextid=wwXIfr&rdid=xxdHKMl7f3QbmXjg&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F18RZbv8b7E%2F%3Fmibextid%3DwwXIfr"
+        target="_blank" aria-label="Facebook">
+        <i class="ph ph-facebook-logo"></i>
+      </a>
+    </div>
+
+    <p>© 2026 <strong style="color:rgba(255,255,255,.75);">Apex Events LLC</strong> &middot; Apex Card Show &middot; All
+      Rights Reserved</p>
+    <!-- Removed the reduced-motion link as it was a portfolio-specific feature -->
+    <p style="margin-top:8px;font-size:.85rem;opacity:.7;">
+      <a href="events.html" style="color:inherit;text-decoration:underline;">Events</a>
+      &nbsp;·&nbsp;
+      <a href="vending.html" style="color:inherit;text-decoration:underline;">Vending</a>
+      &nbsp;·&nbsp;
+      <a href="about.html" style="color:inherit;text-decoration:underline;">About</a>
+      &nbsp;·&nbsp;
+      <a href="contact.html" style="color:inherit;text-decoration:underline;">Contact</a>
+    </p>
+  </footer>
+
+
+  <!-- ============================================================
+    JAVASCRIPT
+    ============================================================
+    Three features on this page:
+      1. Mobile Navigation — same as all other pages
+      2. Contact Form — intercepts submit, shows success message
+      3. FAQ Accordion — toggles open/closed on click
+      4. Scroll Fade-Up — same observer as all other pages
+  ============================================================ -->
+  <script>
+
+    // ── MOBILE NAVIGATION ─────────────────────────────────────────
+
+    function openMobileNav() {
+      document.getElementById('mobileNav').classList.add('open');
+      document.getElementById('mobileOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileNav() {
+      document.getElementById('mobileNav').classList.remove('open');
+      document.getElementById('mobileOverlay').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeMobileNav();
+    });
+
+
+    // ── CONTACT FORM HANDLER ──────────────────────────────────────
+    // handleFormSubmit() intercepts the form's default submit behavior,
+    // shows a success message, and clears the form.
+    // In production, replace the contents of this function with a real
+    // form handler (Netlify Forms, Formspree, EmailJS, etc.).
+
+    function handleFormSubmit(event) {
+      // Prevent the form from reloading the page (default browser behavior)
+      event.preventDefault();
+
+      // Grab the form values so we can build a pre-filled email.
+      // This opens the user's email client with everything ready to send
+      // to apexcardshow@gmail.com — no backend server needed.
+      var firstName = document.getElementById('firstName').value;
+      var lastName  = document.getElementById('lastName').value;
+      var email     = document.getElementById('email').value;
+      var phone     = document.getElementById('phone').value;
+      var inquiry   = document.getElementById('inquiryType').value;
+      var message   = document.getElementById('message').value;
+
+      // Collect the "I am a:" checkboxes that were ticked
+      var roleChecks = document.querySelectorAll('input[name="role"]:checked');
+      var roles = [];
+      roleChecks.forEach(function(cb) { roles.push(cb.value); });
+
+      // Build the email subject and body
+      var subject = 'Apex Card Show — ' + (inquiry || 'New Inquiry') + ' from ' + firstName + ' ' + lastName;
+      var body =
+        'Name: ' + firstName + ' ' + lastName + '\n' +
+        'Email: ' + email + '\n' +
+        'Phone: ' + (phone || 'Not provided') + '\n' +
+        'Inquiry Type: ' + inquiry + '\n' +
+        'Role: ' + (roles.length ? roles.join(', ') : 'Not specified') + '\n\n' +
+        'Message:\n' + message;
+
+      // Open the user's email client with everything pre-filled.
+      // encodeURIComponent escapes special characters so the URL doesn't break.
+      var mailto = 'mailto:apexcardshow@gmail.com'
+        + '?subject=' + encodeURIComponent(subject)
+        + '&body=' + encodeURIComponent(body);
+
+      window.location.href = mailto;
+
+      // Hide the form and show the success message.
+      document.getElementById('contactForm').style.display = 'none';
+      document.getElementById('formSuccess').style.display = 'block';
+
+      // Scroll the success message into view so mobile users see it
+      document.getElementById('formSuccess').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+
+    // ── FAQ ACCORDION ─────────────────────────────────────────────
+    // toggleFaq() opens or closes a single FAQ item when its question
+    // button is clicked. Only one FAQ can be open at a time —
+    // clicking a new item closes the currently open one first.
+
+    function toggleFaq(button) {
+      // Find the parent .faq-item that contains this button
+      const item = button.closest('.faq-item');
+
+      // Check if this item is already open
+      const isOpen = item.classList.contains('open');
+
+      // Close ALL open FAQ items first.
+      // This implements the "only one open at a time" behavior.
+      document.querySelectorAll('.faq-item.open').forEach(function(openItem) {
+        openItem.classList.remove('open');
+        // Update aria-expanded on the button inside each closed item
+        openItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+      });
+
+      // If the clicked item was NOT already open, open it now.
+      // If it WAS open, the step above already closed it — so we do nothing more.
+      if (!isOpen) {
+        item.classList.add('open');
+        // aria-expanded tells screen readers the answer is now visible
+        button.setAttribute('aria-expanded', 'true');
+      }
+    }
+
+
+    // ── SCROLL FADE-UP ANIMATIONS ─────────────────────────────────
+    // Identical to all other pages.
+
+    const observer = new IntersectionObserver(
+      function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    document.querySelectorAll('.fade-up').forEach(function(el) {
+      observer.observe(el);
+    });
+
+  </script>
+
+</body>
+</html>

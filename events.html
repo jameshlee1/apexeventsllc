@@ -1,0 +1,1328 @@
+<!doctype html>
+<!-- Events page for Apex Card Show — lists upcoming and past TCG events in the DMV area -->
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Events — Apex Card Show</title>
+
+  <!-- Favicon matches the main site -->
+  <link rel="icon" type="image/png" href="images/apexlogo3d.png" />
+
+  <!-- Renamed from projects.css to events.css to match the page name -->
+  <link rel="stylesheet" href="css/events.css" />
+
+  <!-- Phosphor Icons — used for calendar, location, clock, and ticket icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <!-- Page-specific styles — extend the shared stylesheet with events-only components.
+       Using <style> here keeps events-only CSS separate from the shared file. -->
+  <style>
+    /* ── GOOGLE FONTS — Bebas Neue for ticket section heading ── */
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700;800&display=swap');
+
+    /* ── PAGE HERO BANNER ───────────────────────────────────────────
+       A dark full-width banner used as the page header on inner pages.
+       Replaces the hero slideshow that only appears on the home page.
+       Uses the same dark background (#0a0a0a) as the main hero so the
+       visual language stays consistent across pages. */
+    .page-hero {
+      background: linear-gradient(160deg,
+          #0a0a0a 0%,
+          #0f1a38 60%,
+          #1a0a2e 100%);
+      padding: 100px 24px 70px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Decorative grid overlay — adds depth without using an image.
+       pointer-events: none means it never blocks clicks. */
+    .page-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(220, 38, 38, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(220, 38, 38, 0.07) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    /* Glowing orb behind the heading — creates a purple halo effect */
+    .page-hero::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(ellipse,
+          rgba(220, 38, 38, 0.18) 0%,
+          transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Eyebrow pill — same style as the hero eyebrow on index.html */
+    .page-hero-eyebrow {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #fff;
+      background: rgba(220, 38, 38, 0.14);
+      border: 1px solid rgba(220, 38, 38, 0.35);
+      padding: 5px 16px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Main heading inside the page hero */
+    .page-hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+      /* Gradient text — matches the hero h1 gradient on index.html */
+      background: linear-gradient(130deg,
+          #ffffff 45%,
+          rgba(147, 210, 255, 0.8));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Subtitle below the heading */
+    .page-hero p {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: rgba(255, 255, 255, 0.6);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── FILTER TABS ───────────────────────────────────────────────
+       Let users toggle between Upcoming and Past events.
+       The active tab has a filled background; inactive tabs are outlined. */
+    .filter-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 40px 24px 0;
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      padding: 10px 28px;
+      border-radius: 999px;
+      border: 1.5px solid var(--soft-border);
+      background: var(--white);
+      color: #556;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      /* Removes default button appearance */
+      font-family: inherit;
+    }
+
+    .filter-tab:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Active state — filled with accent color */
+    .filter-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ── EVENTS GRID ───────────────────────────────────────────────
+       A responsive grid that holds all event cards.
+       Uses the same max-width and auto-fit pattern as the project grid
+       on index.html so the layout feels consistent. */
+    .events-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      /* Auto-fit with 340px minimum — creates 3 columns on wide screens,
+         2 on medium, 1 on mobile */
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 28px;
+    }
+
+    /* ── EVENT CARD ────────────────────────────────────────────────
+       Extended from .project-card — same border-radius and shadow
+       but with additional metadata rows (date, location, time). */
+    .event-card {
+      background: var(--white);
+      border-radius: 22px;
+      border: 1px solid var(--soft-border);
+      overflow: hidden;
+      transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.35s ease;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .event-card:hover {
+      transform: translateY(-8px);
+      box-shadow:
+        0 18px 45px rgba(0,0,0,0.10),
+        0 0 0 3px rgba(185,28,28,0.08);
+      border-color: rgba(185, 28, 28, 0.35);
+    }
+
+    /* Card thumbnail — taller than project cards to allow for event imagery */
+    .event-thumb {
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Gradient fallback used when no photo is available.
+       Each card gets a different gradient via modifier classes below. */
+    .event-thumb-purple {
+      background: linear-gradient(135deg, #b91c1c, #b91c1c);
+    }
+
+    .event-thumb-blue {
+      background: linear-gradient(135deg, #141414, #1e40af);
+    }
+
+    .event-thumb-gold {
+      background: linear-gradient(135deg, #78350f, #d97706, #ef4444);
+    }
+
+    .event-thumb-green {
+      background: linear-gradient(135deg, #064e3b, #10b981);
+    }
+
+    .event-thumb-crimson {
+      background: linear-gradient(135deg, #7f1d1d, #b91c1c);
+    }
+
+    .event-thumb-ink {
+      background: linear-gradient(135deg, #1f1f3a, #7f1d1d);
+    }
+
+    /* Large centered text inside the thumbnail — shows event name when no photo */
+    .event-thumb-title {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 900;
+      font-size: 1.5rem;
+      text-align: center;
+      padding: 0 20px;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+      letter-spacing: -0.01em;
+    }
+
+    /* Image inside event thumbnail — fills the card area, centered, no distortion.
+       object-fit: cover crops to fill without stretching.
+       object-position: top center keeps the event title / top art visible since
+       all three flyers are portrait (tall) and the card thumbnail is landscape (wide).
+       All .event-thumb containers are locked to 260px so every card
+       thumbnail is the exact same height for a clean, even grid. */
+    .event-thumb {
+      height: 260px !important;
+    }
+
+    .event-thumb img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      /* Default — each image can override via inline style */
+      display: block;
+    }
+
+    /* Status badge — "Upcoming", "Sold Out", "Past", etc. */
+    .event-status {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      padding: 5px 13px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      backdrop-filter: blur(8px);
+    }
+
+    .status-upcoming {
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      transition: transform .3s ease, background .3s ease;
+    }
+
+    .status-soldout {
+      background: rgba(185, 28, 28, 0.85);
+      color: #fff;
+    }
+
+    .status-past {
+      background: rgba(0, 0, 0, 0.55);
+      color: rgba(255, 255, 255, 0.7);
+      transition: transform .3s ease, background .3s ease;
+    }
+
+    .status-free {
+      background: rgba(185, 28, 28, 0.85);
+      color: #fff;
+    }
+
+    /* Badge lifts and turns red on hover — matches index.html card-tag */
+    .event-card:hover .event-status {
+      transform: translateY(-2px) scale(1.05);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* Card body — contains title, meta rows, description, and CTA */
+    .event-body {
+      padding: 24px 26px 28px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      /* Pushes CTA to the bottom of the card */
+    }
+
+    .event-body h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--ink);
+      line-height: 1.3;
+    }
+
+    /* Meta rows — date, time, location displayed with icons */
+    .event-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+
+    .event-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.86rem;
+      color: #556;
+    }
+
+    /* Icon inside each meta row */
+    .event-meta-row i {
+      color: var(--accent);
+      font-size: 1rem;
+      flex-shrink: 0;
+      /* Icon never shrinks if text wraps */
+    }
+
+    .event-body p {
+      font-size: 0.9rem;
+      color: #667;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      flex: 1;
+      /* Pushes CTA down */
+    }
+
+    /* Ticket/register CTA inside the card */
+    .event-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 24px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      text-decoration: none;
+      align-self: flex-start;
+      transition:
+        background 0.25s,
+        transform 0.25s;
+    }
+
+    .event-cta:hover {
+      background: #ef4444;
+      transform: translateY(-2px);
+    }
+
+    /* Disabled CTA for sold-out events */
+    .event-cta.disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .event-cta.disabled:hover {
+      background: #ccc;
+      transform: none;
+    }
+
+    /* Upcoming events CTA — bold dark blue, brightens on hover */
+    .event-cta.free {
+      background: #1a3a8f;
+    }
+
+    .event-cta.free:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+    }
+
+    /* ── PAST EVENTS ───────────────────────────────────────────────
+       Past event cards are slightly desaturated so they read as
+       archived content, not upcoming events. */
+    .event-card.past {
+      opacity: 0.7;
+    }
+
+    .event-card.past:hover {
+      opacity: 1;
+    }
+
+    /* ── SECTION DIVIDER ──────────────────────────────────────────
+       Simple heading that separates "Upcoming" from "Past" events */
+    .events-divider {
+      max-width: 1180px;
+      margin: 60px auto 36px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .events-divider h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      white-space: nowrap;
+      color: var(--ink);
+    }
+
+    /* Horizontal rule extending from the divider heading */
+    .events-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--soft-border);
+    }
+
+    /* ── EMPTY STATE ───────────────────────────────────────────────
+       Shown when a filter has no matching events */
+    .events-empty {
+      text-align: center;
+      padding: 60px 24px;
+      color: #889;
+      font-size: 1rem;
+      display: none;
+      /* Hidden by default; JS shows it when needed */
+    }
+
+    /* ── NEWSLETTER BAND ──────────────────────────────────────────
+       Encourages users to sign up for event notifications */
+    .newsletter-band {
+      background: linear-gradient(135deg, #0a0a0a 0%, #0f1a38 100%);
+      padding: 80px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .newsletter-band::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(220, 38, 38, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(220, 38, 38, 0.1) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    .newsletter-inner {
+      max-width: 560px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .newsletter-inner h2 {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .newsletter-inner p {
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 32px;
+      line-height: 1.7;
+    }
+
+    /* Email input + button row */
+    .newsletter-form {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .newsletter-input {
+      flex: 1;
+      min-width: 220px;
+      padding: 14px 20px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.25s;
+    }
+
+    .newsletter-input::placeholder {
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    .newsletter-input:focus {
+      border-color: var(--accent);
+    }
+
+    /* ── RESPONSIVE ADJUSTMENTS ──────────────────────────────────
+       Below 600px the grid collapses to a single column and
+       the filter tabs wrap naturally. */
+    @media (max-width: 600px) {
+      .events-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ── TICKETS AVAILABLE NOW SECTION ──────────────────────────────
+       Moved from vending.html — sits below Past Events on this page.
+       Same two-column layout: bold heading + details on the left,
+       OnTreasure iframe in a clean card on the right. */
+    .ticket-section {
+      background: var(--white);
+      padding: 100px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ticket-section-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 60px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .ticket-section-header { display: flex; flex-direction: column; }
+    .ticket-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 22px;
+      align-self: flex-start;
+    }
+    .pulse-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent); flex-shrink: 0;
+      animation: goldPulse 1.8s ease-out infinite;
+    }
+    @keyframes goldPulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(185,28,28,.7); }
+      50%      { box-shadow: 0 0 0 8px rgba(185,28,28,0); }
+    }
+    .ticket-section-title {
+      font-family: 'Bebas Neue', 'Impact', sans-serif;
+      font-size: clamp(2.6rem, 4.5vw, 4rem);
+      font-weight: 400;
+      letter-spacing: .03em;
+      line-height: .95;
+      color: var(--ink);
+      margin-bottom: 14px;
+    }
+    .ticket-section-title span { color: var(--accent); }
+    .ticket-event-name {
+      font-size: 1.1rem; font-weight: 700; color: #444;
+      line-height: 1.3; margin-bottom: 26px; letter-spacing: .01em;
+    }
+    .ticket-event-details { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+    .ted-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: .95rem; color: #444; line-height: 1.5;
+    }
+    .ted-item i { color: var(--accent); font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+    .ticket-note {
+      font-size: .9rem; color: #666; line-height: 1.6;
+      margin-top: 18px; display: flex; align-items: flex-start; gap: 8px;
+      padding: 14px 18px;
+      background: rgba(185,28,28,0.06);
+      border-radius: 12px;
+      border-left: 3px solid var(--accent);
+    }
+    .ticket-note i { color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+    .ticket-note strong { color: var(--ink); }
+    .ontreasure-embed {
+      background: var(--white);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.12);
+      border: 1px solid var(--soft-border);
+      min-height: 700px;
+    }
+    .ontreasure-embed iframe { display: block; width: 100%; min-height: 700px; border: none; }
+    .embed-fallback {
+      display: none; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center; padding: 60px 32px; gap: 16px;
+      background: var(--light-bg); border-radius: 20px; border: 1px solid var(--soft-border);
+    }
+    .embed-fallback i { font-size: 3rem; color: var(--accent); }
+    .embed-fallback p { font-size: .95rem; color: #555; }
+    .btn-tickets {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 16px 32px; border-radius: 999px;
+      background: var(--accent);
+      color: #fff; font-weight: 800; font-size: 1rem;
+      text-decoration: none; letter-spacing: .02em;
+      box-shadow: 0 12px 30px rgba(185,28,28,.30);
+      transition: transform .25s, box-shadow .25s, background .25s;
+      border: none; cursor: pointer; font-family: inherit; align-self: flex-start;
+    }
+    .btn-tickets:hover {
+      background: #ef4444;
+      transform: translateY(-3px);
+      box-shadow: 0 18px 40px rgba(185,28,28,.45);
+    }
+    .btn-tickets i { font-size: 1.1rem; }
+    /* Green variant — used on the OnTreasure external link button */
+    .btn-tickets-green {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 16px 32px; border-radius: 999px;
+      background: #166534;
+      color: #fff; font-weight: 800; font-size: 1rem;
+      text-decoration: none; letter-spacing: .02em;
+      box-shadow: 0 12px 30px rgba(22,101,52,.30);
+      transition: transform .25s, box-shadow .25s, background .25s;
+      border: none; cursor: pointer; font-family: inherit; align-self: flex-start;
+    }
+    .btn-tickets-green:hover {
+      background: #14532d;
+      transform: translateY(-3px);
+      box-shadow: 0 18px 40px rgba(22,101,52,.45);
+    }
+    .btn-tickets-green i { font-size: 1.1rem; }
+    /* Ticket event selector tabs */
+    .ticket-event-tabs {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px;
+    }
+    .ticket-tab {
+      padding: 8px 20px; border-radius: 999px;
+      border: 1.5px solid var(--soft-border);
+      background: var(--white); color: #556;
+      font-weight: 600; font-size: .85rem; cursor: pointer;
+      font-family: inherit; transition: all .25s;
+    }
+    .ticket-tab:hover { border-color: var(--accent); color: var(--accent); }
+    .ticket-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    @media (max-width: 900px) {
+      .ticket-section-inner { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Mobile overlay — dims page when mobile nav is open -->
+  <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileNav()"></div>
+
+  <!-- ============================================================
+    HEADER — identical structure to index.html.
+    "Events" link has class="active" because this IS the Events page.
+  ============================================================ -->
+  <header>
+    <a class="brand" href="index.html"> Apex <span>Events LLC</span> </a>
+
+    <nav class="desktop-nav">
+      <a href="index.html">Home</a>
+      <!-- class="active" marks Events as the current page -->
+      <a href="events.html" class="active">Events</a>
+      <a href="vending.html">Vending</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+    <div style="display:flex; align-items:center; gap:14px;">
+      <a href="https://www.instagram.com/apexcardshow/" target="_blank" class="header-social" aria-label="Instagram">
+        <i class="ph ph-instagram-logo"></i>
+      </a>
+      <a href="https://www.facebook.com/people/Apex-Card-Show/61580704702168/?mibextid=wwXIfr&rdid=xxdHKMl7f3QbmXjg&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F18RZbv8b7E%2F%3Fmibextid%3DwwXIfr" target="_blank" class="header-social" aria-label="Facebook">
+        <i class="ph ph-facebook-logo"></i>
+      </a>
+      <button class="mobile-toggle" aria-label="Open navigation" onclick="openMobileNav()">
+        <span class="bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================================================
+    MOBILE NAV — same structure as index.html.
+    "Events" has class="active" here as well.
+  ============================================================ -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
+    <button class="mobile-nav-close" aria-label="Close navigation" onclick="closeMobileNav()">
+      &times;
+    </button>
+    <span class="mobile-nav-label">Navigation</span>
+    <a href="index.html" onclick="closeMobileNav()">Home</a>
+    <a href="events.html" class="active" onclick="closeMobileNav()">Events</a>
+    <a href="vending.html" onclick="closeMobileNav()">Vending</a>
+    <a href="about.html" onclick="closeMobileNav()">About</a>
+    <a href="contact.html" onclick="closeMobileNav()">Contact</a>
+    <div class="mobile-nav-cta">
+      <a href="contact.html" onclick="closeMobileNav()">Let's Connect! →</a>
+    </div>
+  </nav>
+
+  <main style="padding-top: 64px">
+    <!-- ============================================================
+      PAGE HERO BANNER
+      ============================================================
+      Dark gradient banner replaces the slideshow on inner pages.
+      Shows the page title, eyebrow label, and a short description.
+    ============================================================ -->
+    <section class="page-hero">
+      <!-- Eyebrow label identifies the section of the site -->
+      <span class="page-hero-eyebrow">Apex · Card · Show</span>
+
+      <h1>Events</h1>
+      <p>Check
+        our schedule and grab your spot before they sell out.
+      </p>
+    </section>
+
+    <!-- ============================================================
+      FILTER TABS
+      ============================================================
+      Buttons that toggle which events are displayed.
+      JavaScript handles the show/hide logic below.
+    ============================================================ -->
+    <div class="filter-tabs" style="
+          background: var(--white);
+          padding-bottom: 40px;
+          border-bottom: 1px solid var(--soft-border);
+        ">
+      <!-- class="active" on the first tab shows Upcoming events by default -->
+      <button class="filter-tab active" onclick="filterEvents('upcoming')">
+        Upcoming Events
+      </button>
+      <button class="filter-tab" onclick="filterEvents('past')">
+        Past Events
+      </button>
+      <button class="filter-tab" onclick="filterEvents('all')">
+        All Events
+      </button>
+    </div>
+
+    <!-- ============================================================
+      UPCOMING EVENTS
+      ============================================================
+      id="upcoming-section" — the filter JS uses this to show/hide.
+    ============================================================ -->
+    <section class="section white" id="upcoming-section">
+      <!-- Section divider heading -->
+      <div class="events-divider fade-up">
+        <h2>Upcoming Events</h2>
+      </div>
+
+      <!-- Events grid — 3-column layout on desktop, 1-column on mobile -->
+      <div class="events-grid">
+        <!-- ── EVENT 1: Garden Exchange — May 16, 2026 ──────────
+             Uses the actual Garden Exchange flyer (gardenexchange.jpeg).
+             object-position: top center shows the Apex logo and title art. -->
+        <!-- EVENT 1 Garden Exchange -->
+        <div class="event-card fade-up">
+          <div class="event-thumb">
+            <img src="images/bulba.png" alt="Apex Card Show Garden Exchange flyer May 16, 2026"
+              style="object-position: center 62%;">
+            <span class="event-status status-upcoming">Upcoming</span>
+          </div>
+
+          <div class="event-body">
+            <h3>Apex Card Show — Garden Exchange 2026</h3>
+
+            <div class="event-meta">
+              <div class="event-meta-row">
+                <i class="ph ph-calendar-blank"></i>
+                <span>Saturday, May 16, 2026</span>
+              </div>
+              <div class="event-meta-row">
+                <i class="ph ph-clock"></i>
+                <span>9:00 AM – 4:00 PM</span>
+              </div>
+              <div class="event-meta-row">
+                <i class="ph ph-map-pin"></i>
+                <span>Hilton Garden Inn · 3950 Fair Ridge Dr, Fairfax, VA 22033</span>
+              </div>
+              <div class="event-meta-row">
+                <i class="ph ph-ticket"></i>
+                <span>$5 Entry · Free Parking · Free Entry Kids Under 12</span>
+              </div>
+            </div>
+
+            <p>
+              ☀️ 🃏 80+ Tables 🎁 Free Raffle Prizes, Giveaways every 30 minutes!
+              <strong>💰 First 50 Guests receive $10 Apex Cash! 🎟️ $5 Admission + FREE Parking 👶 Kids under 12 enter
+                FREE! ⏰</strong>
+              Whether you're looking to buy, sell, trade, or just enjoy the hobby with the community, this is the place
+              to be!
+              🙌 📲 Click the RSVP button for an unforgettable day of cards, fun, and community vibes! Powered by Red
+              Bull.
+            </p>
+
+            <!-- Garden Exchange button — scrolls to ticket section on this page -->
+            <a href="#get-tickets" onclick="openTickets('garden-exchange', event)" class="event-cta free">
+              <i class="ph ph-ticket"></i> Get Tickets
+            </a>
+          </div>
+        </div>
+
+        <!-- EVENT 2 Summer Social -->
+        <div class="event-card fade-up">
+          <div class="event-thumb">
+            <img src="images/squirtle.png" alt="Apex Card Show Summer Social flyer June 20, 2026"
+              style="object-position: center 28%;">
+            <span class="event-status status-upcoming">Upcoming</span>
+          </div>
+
+          <div class="event-body">
+            <h3>Apex Card Show — Summer Social 2026</h3>
+
+            <div class="event-meta">
+              <div class="event-meta-row">
+                <i class="ph ph-calendar-blank"></i>
+                <span>Saturday, June 20, 2026</span>
+              </div>
+              <div class="event-meta-row">
+                <i class="ph ph-clock"></i>
+                <span>9:00 AM – 3:00 PM</span>
+              </div>
+              <div class="event-meta-row">
+                <i class="ph ph-map-pin"></i>
+                <span>Hilton Fairfax · 12777 Fairlakes Circle, Fairfax, VA 22033</span>
+              </div>
+              <div class="event-meta-row">
+                <i class="ph ph-ticket"></i>
+                <span>$5 Tickets · Free Parking · Free Entry Kids Under 12</span>
+              </div>
+            </div>
+
+            <p>
+              ☀️ 🃏 90+ Tables 🎁 Free Raffle Prizes, Giveaways every 30 minutes!
+              <strong>💰 First 50 Guests receive $10 Apex Cash! 🎟️ $5 Admission + FREE Parking 👶 Kids under 12 enter
+                FREE! ⏰</strong>
+              Whether you're looking to buy, sell, trade, or just enjoy the hobby with the community, this is the place
+              to be!
+              🙌 📲 Click the RSVP button for an unforgettable day of cards, fun, and community vibes! Powered by Red
+              Bull.
+            </p>
+
+            <!-- Summer Social button — scrolls to ticket section on this page -->
+            <a href="#get-tickets" onclick="openTickets('summer-social', event)" class="event-cta free">
+              <i class="ph ph-ticket"></i> Get Tickets
+            </a>
+          </div>
+        </div>
+
+        <!-- EVENT 3 Infernofest -->
+        <div class="event-card fade-up">
+          <div class="event-thumb">
+            <img src="images/charmander.png" alt="Apex Presents Infernofest flyer July 25, 2026"
+              style="object-position: center 47%;">
+            <span class="event-status status-upcoming">Upcoming</span>
+          </div>
+
+          <div class="event-body">
+            <h3>Apex Card Show — Infernofest 2026</h3>
+
+            <div class="event-meta">
+              <div class="event-meta-row">
+                <i class="ph ph-calendar-blank"></i>
+                <span>Saturday, July 25, 2026</span>
+              </div>
+              <div class="event-meta-row">
+                <i class="ph ph-clock"></i>
+                <span>10:00 AM – 4:00 PM</span>
+              </div>
+              <div class="event-meta-row">
+                <i class="ph ph-map-pin"></i>
+                <span>Elks Lodge · 8421 Arlington Blvd, Fairfax, VA 22031</span>
+              </div>
+              <div class="event-meta-row">
+                <i class="ph ph-ticket"></i>
+                <span>$5 Tickets · Free Parking · Free Entry Kids Under 12</span>
+              </div>
+            </div>
+
+            <p>
+              ☀️ 🃏 80+ Tables 🎁 Free Raffle Prizes, Giveaways every 30 minutes!
+              <strong>💰 First 50 Guests receive $10 Apex Cash! 🎟️ $5 Admission + FREE Parking 👶 Kids under 12 enter
+                FREE! ⏰</strong>
+              Whether you're looking to buy, sell, trade, or just enjoy the hobby with the community, this is the place
+              to be!
+              🙌 📲 Click the RSVP button for an unforgettable day of cards, fun, and community vibes! Powered by Red
+              Bull.
+            </p>
+
+            <!-- Infernofest button — scrolls to ticket section on this page -->
+            <a href="#get-tickets" onclick="openTickets('infernofest', event)" class="event-cta free">
+              <i class="ph ph-ticket"></i> Get Tickets
+            </a>
+          </div>
+        </div>
+        <!-- end .events-grid (upcoming) -->
+    </section>
+
+    <!-- ============================================================
+      PAST EVENTS
+      ============================================================
+      id="past-section" — the filter JS uses this to show/hide.
+      Cards have class="past" for the desaturated look.
+    ============================================================ -->
+    <section class="section gray" id="past-section">
+      <div class="events-divider fade-up">
+        <h2>Past Events</h2>
+      </div>
+
+      <div class="events-grid">
+        <!-- ── PAST EVENT 1 ──────────────────────────────────── -->
+        <div class="event-card past fade-up">
+          <div class="event-thumb event-thumb-ink">
+            <!-- object-position: center 92% — crops to the character art zone at the
+                 very bottom of the flyer (Pikachu, Eevee, Sylveon, Luffy), hiding all text -->
+            <img src="images/First Card Show Flyer (5.5 x 8.5 in) - 1.JPG"
+              alt="Apex Card Show Easter Edition flyer — April 4, 2026" style="object-position: center 92%" />
+            <span class="event-thumb-title"></span>
+            <span class="event-status status-past">Past Event</span>
+          </div>
+          <div class="event-body">
+            <h3>Apex Card Show — Spring Edition 2026</h3>
+            <div class="event-meta">
+              <div class="event-meta-row">
+                <i class="ph ph-calendar-blank"></i>
+                <span>Saturday, April 4, 2026</span>
+              </div>
+              <div class="event-meta-row">
+                <i class="ph ph-map-pin"></i>
+                <span>Hilton Garden Inn · 3950 Fair Ridge Dr, Fairfax, VA
+                  22033</span>
+              </div>
+              <div class="event-meta-row">
+                <i class="ph ph-users"></i>
+                <span>300+ Attendees · 70+ Vendors</span>
+              </div>
+            </div>
+            <p>
+              🃏 70+ Tables
+💵 $1,500 in Total Giveaways
+
+🎁 $500 in FREE Giveaways!
+🥚 $500 Easter Egg Raffles!
+💰 First 50 Guests receive $10 Apex Cash!
+
+📸 Themed Photo Booth!
+
+🆓 FREE Admission + FREE Parking!
+            </p>
+            <a href="contact.html" class="event-cta disabled" aria-disabled="true">
+              <i class="ph ph-check-circle"></i> Event Ended
+            </a>
+          </div>
+        </div>
+      </div>
+      <!-- end .events-grid (past) -->
+    </section>
+
+    
+
+    <!-- ============================================================
+      TICKETS AVAILABLE NOW
+      ============================================================
+      Moved from vending.html — sits at the bottom of the Events page,
+      below Past Events. Event tabs let users switch between shows.
+      OnTreasure iframe is dynamically populated by JS.
+    ============================================================ -->
+    <section class="ticket-section" id="get-tickets">
+      <div class="ticket-section-inner">
+
+        <div class="ticket-section-header fade-up">
+          <span class="ticket-eyebrow">
+            <span class="pulse-dot"></span> Tickets Available Now
+          </span>
+          <h2 class="ticket-section-title">
+            Get Your Tickets <span>Today</span>
+          </h2>
+
+          <!-- Event selector tabs -->
+          <div class="ticket-event-tabs">
+            <button class="ticket-tab active" onclick="switchTicketEvent('garden-exchange', this)">Garden Exchange</button>
+            <button class="ticket-tab" onclick="switchTicketEvent('summer-social', this)">Summer Social</button>
+            <button class="ticket-tab" onclick="switchTicketEvent('infernofest', this)">Infernofest</button>
+          </div>
+
+          <h3 class="ticket-event-name" id="ticket-title">Garden Exchange — Apex Card Show 2026</h3>
+          <div class="ticket-event-details">
+            <div class="ted-item"><i class="ph ph-calendar-blank"></i> <span id="ticket-date">Saturday, May 16, 2026</span></div>
+            <div class="ted-item"><i class="ph ph-clock"></i> <span id="ticket-time">9:00 AM – 4:00 PM</span></div>
+            <div class="ted-item"><i class="ph ph-map-pin"></i> <span id="ticket-location">Hilton Garden Inn · 3950 Fair Ridge Dr, Fairfax, VA</span></div>
+            <div class="ted-item"><i class="ph ph-ticket"></i> <span id="ticket-price">$5 Entry · Free Parking · Kids Under 12 Free</span></div>
+          </div>
+          <a id="ticket-ext-link"
+            href="https://www.ontreasure.com/events/-apex-card-show-garden-exchange--05162026"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-tickets"
+          >
+            <i class="ph ph-ticket"></i> Get Tickets on OnTreasure
+          </a>
+          <p class="ticket-note">
+            <i class="ph ph-star-fill"></i> First 50 guests receive <strong>$10 Apex Cash</strong> — arrive early!
+          </p>
+        </div>
+
+        <!-- OnTreasure iframe — src swapped by JS -->
+        <div class="ontreasure-embed fade-up">
+          <iframe
+            id="ontreasure-iframe"
+            src="https://www.ontreasure.com/events/-apex-card-show-garden-exchange--05162026"
+            width="100%"
+            height="700"
+            frameborder="0"
+            scrolling="yes"
+            title="Apex Card Show Tickets"
+            loading="lazy"
+            allow="payment"
+          ></iframe>
+          <div class="embed-fallback" id="iframe-fallback">
+            <i class="ph ph-ticket"></i>
+            <p>Click below to purchase tickets on OnTreasure</p>
+            <a id="fallback-link"
+              href="https://www.ontreasure.com/events/-apex-card-show-garden-exchange--05162026"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-tickets"
+            >
+              <i class="ph ph-arrow-square-out"></i> Open Ticket Page
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+      NEWSLETTER / NOTIFICATIONS BAND
+      ============================================================
+      Encourages visitors to sign up so they never miss an event.
+    ============================================================ -->
+    <section class="newsletter-band">
+      <div class="newsletter-inner fade-up">
+        <span class="page-hero-eyebrow" style="margin-bottom: 16px">Stay Updated</span>
+        <h2>Never miss an Apex event.</h2>
+        <p>
+          Drop your email and we'll notify you first when new events,
+          giveaways, and vendor spots are announced.
+        </p>
+        <!-- Notify Me — opens mail client addressed to Apex, with email pre-filled in subject -->
+        <div class="newsletter-form">
+          <input type="email" id="notifyEmail" class="newsletter-input" placeholder="your@email.com" aria-label="Email address" />
+          <button onclick="sendNotifyEmail()" class="btn-primary" style="white-space: nowrap; border: none; cursor: pointer;">
+            Notify Me →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA band — same component used on index.html -->
+    <section class="cta-band">
+      <div class="cta-inner fade-up">
+        <div class="cta-text">
+          <h2>Want to vend at our events?</h2>
+          <p>
+            We're always looking for great vendors. Click to see prices and reserve your
+            table at the next Apex Card Show.
+          </p>
+        </div>
+        <a href="vending.html" class="btn-primary">Reserve Now →</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+    FOOTER — same structure as index.html footer
+  ============================================================ -->
+   <footer>
+    <!-- Updated footer from placeholder portfolio text to Apex Card Show branding -->
+
+    <!-- Social media icons row - matches the 703 footer style.
+         Linked to Apex Card Show's Instagram and Facebook accounts. -->
+    <div class="footer-social">
+      <a href="https://www.instagram.com/apexcardshow/" target="_blank" aria-label="Instagram">
+        <i class="ph ph-instagram-logo"></i>
+      </a>
+      <a href="https://www.facebook.com/people/Apex-Card-Show/61580704702168/?mibextid=wwXIfr&rdid=xxdHKMl7f3QbmXjg&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F18RZbv8b7E%2F%3Fmibextid%3DwwXIfr"
+        target="_blank" aria-label="Facebook">
+        <i class="ph ph-facebook-logo"></i>
+      </a>
+    </div>
+
+    <p>© 2026 <strong style="color:rgba(255,255,255,.75);">Apex Events LLC</strong> &middot; Apex Card Show &middot; All
+      Rights Reserved</p>
+    <!-- Removed the reduced-motion link as it was a portfolio-specific feature -->
+    <p style="margin-top:8px;font-size:.85rem;opacity:.7;">
+      <a href="events.html" style="color:inherit;text-decoration:underline;">Events</a>
+      &nbsp;·&nbsp;
+      <a href="vending.html" style="color:inherit;text-decoration:underline;">Vending</a>
+      &nbsp;·&nbsp;
+      <a href="about.html" style="color:inherit;text-decoration:underline;">About</a>
+      &nbsp;·&nbsp;
+      <a href="contact.html" style="color:inherit;text-decoration:underline;">Contact</a>
+    </p>
+  </footer>
+
+  <!-- ============================================================
+    JAVASCRIPT
+    ============================================================
+    Two features on this page:
+      1. Mobile Navigation — same as index.html
+      2. Event Filter Tabs — show/hide sections by category
+      3. Scroll Fade-Up Animations — same observer as index.html
+  ============================================================ -->
+  <script>
+    // ── NOTIFY ME — opens default mail client to apexcardshow@gmail.com ──
+    // Reads the email the user typed, includes it in the subject line so
+    // Apex knows who to follow up with. Falls back gracefully if empty.
+    function sendNotifyEmail() {
+      var userEmail = document.getElementById('notifyEmail').value.trim();
+      var subject   = userEmail
+        ? 'Event Notifications Request from ' + userEmail
+        : 'Event Notifications Request';
+      var body      = userEmail
+        ? 'Please add ' + userEmail + ' to your event notification list.'
+        : 'Please add me to your event notification list.';
+      window.location.href =
+        'mailto:apexcardshow@gmail.com'
+        + '?subject=' + encodeURIComponent(subject)
+        + '&body='    + encodeURIComponent(body);
+    }
+
+    // ── OPEN TICKETS ───────────────────────────────────────────────
+    // Called by each event card's "Get Tickets" button.
+    // Loads the correct event into the ticket section, then smoothly
+    // scrolls down to it — all without leaving the page.
+    function openTickets(key, e) {
+      e.preventDefault();
+      // Sync the tab buttons in the ticket section
+      document.querySelectorAll('.ticket-tab').forEach(function(btn) {
+        btn.classList.remove('active');
+        if (btn.getAttribute('onclick').includes(key)) {
+          btn.classList.add('active');
+        }
+      });
+      // Populate the ticket section with the right event's details
+      populateTicketSection(key);
+      // Scroll smoothly to the ticket section
+      document.getElementById('get-tickets').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ── TICKET EVENT DATA ──────────────────────────────────────────
+    // Moved from vending.html. Each key maps to an event's details.
+    var TICKET_EVENTS = {
+      'garden-exchange': {
+        title:    'Garden Exchange — Apex Card Show 2026',
+        date:     'Saturday, May 16, 2026',
+        time:     '9:00 AM – 4:00 PM',
+        location: 'Hilton Garden Inn · 3950 Fair Ridge Dr, Fairfax, VA',
+        price:    '$5 Entry · Free Parking · Kids Under 12 Free',
+        url:      'https://www.ontreasure.com/events/-apex-card-show-garden-exchange--05162026',
+        iframeTitle: 'Apex Card Show Garden Exchange Tickets'
+      },
+      'summer-social': {
+        title:    'Summer Social — Apex Card Show 2026',
+        date:     'Saturday, June 20, 2026',
+        time:     '9:00 AM – 3:00 PM',
+        location: 'Hilton Fairfax · 12777 Fairlakes Circle, Fairfax, VA',
+        price:    '$5 Entry · Free Parking · Kids Under 12 Free',
+        url:      'https://www.ontreasure.com/events/-apex-card-show-summer-social--06202026',
+        iframeTitle: 'Apex Card Show Summer Social Tickets'
+      },
+      'infernofest': {
+        title:    'Infernofest — Apex Card Show 2026',
+        date:     'Saturday, July 25, 2026',
+        time:     '10:00 AM – 4:00 PM',
+        location: 'Elks Lodge · 8421 Arlington Blvd, Fairfax, VA',
+        price:    '$5 Tickets · Free Parking · Kids Under 12 Free',
+        url:      'https://www.ontreasure.com/events/apex-card-show-infernofest-07252026',
+        iframeTitle: 'Apex Presents Infernofest Tickets'
+      }
+    };
+
+    // Populate ticket section with the given event key.
+    function populateTicketSection(key) {
+      var ev = TICKET_EVENTS[key] || TICKET_EVENTS['garden-exchange'];
+      document.getElementById('ticket-title').innerHTML    = ev.title;
+      document.getElementById('ticket-date').textContent   = ev.date;
+      document.getElementById('ticket-time').textContent   = ev.time;
+      document.getElementById('ticket-location').textContent = ev.location;
+      document.getElementById('ticket-price').textContent  = ev.price;
+      document.getElementById('ticket-ext-link').href      = ev.url;
+      document.getElementById('ontreasure-iframe').src     = ev.url;
+      document.getElementById('ontreasure-iframe').title   = ev.iframeTitle;
+      document.getElementById('fallback-link').href        = ev.url;
+    }
+
+    // Called when user clicks a ticket-tab button.
+    function switchTicketEvent(key, btn) {
+      document.querySelectorAll('.ticket-tab').forEach(function(t) {
+        t.classList.remove('active');
+      });
+      btn.classList.add('active');
+      populateTicketSection(key);
+    }
+
+    // On load: check ?event= param; if present, scroll to ticket section.
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var key    = params.get('event') || 'garden-exchange';
+      populateTicketSection(key);
+      // Sync the tab button to match
+      document.querySelectorAll('.ticket-tab').forEach(function(btn) {
+        if (btn.getAttribute('onclick').includes(key)) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      if (params.get('event')) {
+        window.addEventListener('load', function() {
+          var section = document.getElementById('get-tickets');
+          if (section) {
+            setTimeout(function() {
+              section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+          }
+        });
+      }
+    })();
+
+    // ── MOBILE NAVIGATION ─────────────────────────────────────────
+    // Identical to index.html — opens/closes the right-side panel.
+
+    function openMobileNav() {
+      document.getElementById("mobileNav").classList.add("open");
+      document.getElementById("mobileOverlay").classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeMobileNav() {
+      document.getElementById("mobileNav").classList.remove("open");
+      document.getElementById("mobileOverlay").classList.remove("show");
+      document.body.style.overflow = "";
+    }
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeMobileNav();
+    });
+
+    // ── EVENT FILTER TABS ─────────────────────────────────────────
+    // filterEvents() is called when the user clicks a filter tab.
+    // It shows or hides the upcoming and past sections, and updates
+    // which tab button appears active.
+
+    function filterEvents(filter) {
+      // Get references to both section containers
+      const upcomingSection = document.getElementById("upcoming-section");
+      const pastSection = document.getElementById("past-section");
+      // Ticket section stays visible regardless of filter
+      if (filter === "upcoming") {
+        upcomingSection.style.display = "block";
+        pastSection.style.display = "none";
+      } else if (filter === "past") {
+        upcomingSection.style.display = "none";
+        pastSection.style.display = "block";
+      } else {
+        upcomingSection.style.display = "block";
+        pastSection.style.display = "block";
+      }
+
+      // Update the active state on all filter tab buttons.
+      // querySelectorAll returns all .filter-tab elements.
+      document.querySelectorAll(".filter-tab").forEach(function (btn) {
+        btn.classList.remove("active");
+      });
+
+      // Find which button was clicked by matching its onclick text to the filter.
+      // getAttribute('onclick') returns the string "filterEvents('upcoming')" etc.
+      document.querySelectorAll(".filter-tab").forEach(function (btn) {
+        if (btn.getAttribute("onclick").includes(filter)) {
+          btn.classList.add("active");
+        }
+      });
+    }
+
+    // ── SCROLL FADE-UP ANIMATIONS ─────────────────────────────────
+    // Identical to index.html — fades elements in as they scroll into view.
+
+    const observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" },
+    );
+
+    document.querySelectorAll(".fade-up").forEach(function (el) {
+      observer.observe(el);
+    });
+  </script>
+</body>
+
+</html>
