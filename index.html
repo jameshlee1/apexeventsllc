@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<!--
+  DOCTYPE tells the browser this is a modern HTML5 document.
+  Without this line, some browsers go into "quirks mode" and
+  render the page differently than expected.
+-->
+
+<!--
+  ================================================================
+  FROM DR. G — IMPORTANT REQUIREMENT
+  ================================================================
+  Moving forward you need to comment ALL of your changes.
+
+  A comment explains WHY you wrote something, not just what it is.
+  Good comments help you — and anyone reading your code — understand
+  decisions you made weeks or months later.
+-->
+
+<html lang="en">
+<!--
+  lang="en" tells the browser and screen readers that this page
+  is written in English. This is required for accessibility —
+  screen readers use it to choose the correct pronunciation engine.
+-->
+
+<head>
+  <!--
+    Everything inside <head> is invisible to the user.
+    It contains metadata (information about the page), the page
+    title shown in the browser tab, and all of our CSS styles.
+  -->
+
+  <meta charset="UTF-8" />
+  <!--
+    charset="UTF-8" sets the character encoding.
+    UTF-8 supports every character — English letters, accents,
+    symbols, and emoji. Without this, special characters may
+    show up as garbled text (? or boxes).
+  -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!--
+    The viewport meta tag controls how the page scales on mobile.
+
+    width=device-width  — sets the page width to match the
+                          device screen width exactly, instead of
+                          rendering at 980px and zooming out.
+
+    initial-scale=1.0   — starts at normal zoom (not zoomed in
+                          or out). Without this, mobile browsers
+                          would shrink the whole page to fit.
+
+    This tag is REQUIRED for responsive design to work.
+    If you remove it, all your media queries will be ignored
+    on mobile devices.
+  -->
+
+  <title> Apex Card Show</title>
+  <!--
+    The text inside <title> appears in:
+      • The browser tab
+      • Browser bookmarks
+      • Search engine results (Google, Bing)
+    Make it descriptive — include your name and course.
+    Example: "Jordan Rivera – ITD 110 Portfolio · NOVA"
+  -->
+
+  <!-- Added a favicon so the Apex Card Show icon appears next to the title in the browser tab and in bookmarks -->
+  <link rel="icon" type="image/png" href="images/apexlogo3d.png" />
+
+  <!-- ============================================================
+    ★ HOW TO FIND CSS FOR THIS PAGE  (read me!)
+    ──────────────────────────────────────────────────────────
+    All styles for this page live in:  css/index.css
+
+    TO FIND THE STYLE FOR AN ELEMENT ON THIS PAGE:
+
+      1. Look at the element in the HTML and find its class.
+         Example:  <section class="page-hero">
+         The class is:  page-hero
+
+      2. Open css/index.css
+
+      3. Press Cmd+F (Mac) or Ctrl+F (Windows) to search.
+         IMPORTANT — put a DOT before the class name:
+           Search:  .page-hero   ← correct (usually 1 rule)
+           Search:  page-hero    ← too many matches
+           Search:  hero         ← way too many matches
+
+    PAGE SECTIONS (in order they appear in css/index.css):
+
+       1. CSS VARIABLES    →  :root  (colors, shadows)
+       2. RESET & BASE     →  *, html, body
+       3. HEADER / NAV     →  header, .brand, .desktop-nav
+       4. MOBILE NAV       →  .mobile-nav, .mobile-toggle
+       5. HERO SLIDESHOW   →  .hero, .hero-slide
+       6. SECTION HELPERS  →  .section-label (and shared helpers)
+       7. FEATURE SPLITS   →  .feature-split, .feature-text
+       8. EVENT CARDS    →  .event-card, .card-thumb
+       9. SKILLS           →  .skills, .skill-tag
+      10. CTA BAND         →  .cta-band, .btn-primary
+      11. FOOTER           →  footer
+      12. SCROLL FADE-UP   →  .fade-up, @keyframes
+      13. RESPONSIVE       →  @media queries
+
+    TIP: Jump to a section by searching for the number with a
+    period (e.g. "4.") or the section title (e.g. "HERO").
+  ============================================================ -->
+  <link rel="stylesheet" href="css/index.css" />
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+  <!--
+    Everything the user sees lives inside <body>.
+    The page is structured in this order:
+      1. Overlay div (hidden until mobile nav opens)
+      2. <header> — fixed top bar
+      3. <nav> — mobile nav panel
+      4. <main> — all visible page sections
+      5. <footer>
+      6. <script> — JavaScript at the very bottom
+  -->
+
+
+  <!-- ============================================================
+    PAGE OVERLAY
+    ============================================================
+    A full-screen dark layer that appears behind the mobile nav
+    panel when it opens. It dims the page so the user's eye goes
+    to the nav. Clicking the overlay also closes the nav.
+
+    id="mobileOverlay" — JavaScript uses this ID to find and
+    show/hide the overlay.
+
+    onclick="closeMobileNav()" — clicking anywhere on the overlay
+    calls the closeMobileNav() JavaScript function.
+  ============================================================ -->
+  <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileNav()"></div>
+
+
+  <!-- ============================================================
+    HEADER
+    ============================================================
+    The fixed top navigation bar. Contains three children
+    arranged with flexbox (justify-content: space-between):
+      LEFT:   Brand/logo link
+      CENTER: Desktop nav links (hidden on mobile)
+      RIGHT:  Wrapper div containing CTA button + hamburger
+  ============================================================ -->
+  <header>
+
+    <!-- Brand name — replace "Your" and "Name" with your actual name.
+         The <span> wraps the second word so CSS can color it with --accent.
+         href="index.html" links back to the homepage from any page. -->
+    <a class="brand" href="index.html">
+      Apex <span>Events LLC</span>
+    </a>
+
+    <nav class="desktop-nav">
+      <a href="index.html" class="active">Home</a>
+      <a href="events.html">Events</a>
+      <a href="vending.html">Vending</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+    <!-- Right-side wrapper holds social icons + hamburger.
+         Social icons (Instagram, Facebook) link to Apex Card Show profiles.
+         Only the hamburger is visible at a time on mobile:
+           Desktop (900px+): social icons visible, hamburger hidden
+           Mobile (<900px):  social icons visible, hamburger visible
+    -->
+    <div style="display:flex; align-items:center; gap:14px;">
+
+      <!-- Social media icons added to match 703collectors style.
+           These link out to Apex Card Show's Instagram and Facebook pages.
+           Using Phosphor icons (already loaded in <head>). -->
+      <a href="https://www.instagram.com/apexcardshow/" target="_blank" class="header-social" aria-label="Instagram">
+        <i class="ph ph-instagram-logo"></i>
+      </a>
+      <a href="https://www.facebook.com/people/Apex-Card-Show/61580704702168/?mibextid=wwXIfr&rdid=xxdHKMl7f3QbmXjg&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F18RZbv8b7E%2F%3Fmibextid%3DwwXIfr"
+        target="_blank" class="header-social" aria-label="Facebook">
+        <i class="ph ph-facebook-logo"></i>
+      </a>
+
+      <!-- Hamburger button — visible below 900px.
+           aria-label="Open navigation" describes the button for
+           screen readers (which cannot see what the icon looks like).
+           onclick="openMobileNav()" calls the JavaScript function
+           that adds .open to the mobile nav panel.
+           The <span class="bar"> is the middle bar of the hamburger;
+           ::before and ::after pseudo-elements draw the top and bottom bars. -->
+      <button class="mobile-toggle" aria-label="Open navigation" onclick="openMobileNav()">
+        <span class="bar"></span>
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- ============================================================
+    MOBILE NAV PANEL
+    ============================================================
+    A slide-in navigation panel for mobile screens.
+    Positioned fixed, starts off-screen to the RIGHT (right: -100%).
+    JavaScript adds class="open" to slide it to right: 0.
+
+    id="mobileNav" — JavaScript targets this ID to open/close.
+    aria-label="Mobile navigation" — screen reader description.
+  ============================================================ -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
+
+    <!-- Close button at top of panel.
+         aria-label describes it for screen readers.
+         &times; is the HTML entity for the × character.
+         onclick calls closeMobileNav() to slide the panel back off-screen. -->
+    <button class="mobile-nav-close" aria-label="Close navigation" onclick="closeMobileNav()">
+      &times;
+    </button>
+
+    <!-- Small decorative label at the top of the panel -->
+    <span class="mobile-nav-label">Navigation</span>
+
+    <!-- Navigation links.
+         Each link has onclick="closeMobileNav()" so the panel
+         closes automatically after the user taps a destination.
+         class="active" marks the current page. -->
+    <a href="index.html" class="active" onclick="closeMobileNav()">Home</a>
+    <a href="events.html" onclick="closeMobileNav()">Events</a>
+    <a href="vending.html" onclick="closeMobileNav()">Vending</a>
+    <a href="about.html" onclick="closeMobileNav()">About</a>
+    <a href="contact.html" onclick="closeMobileNav()">Contact</a>
+
+    <!-- CTA at the bottom of the mobile nav.
+         margin-top: auto in CSS pushes this to the very bottom
+         of the panel regardless of how many links are above it. -->
+    <div class="mobile-nav-cta">
+      <!-- CTA points to the contact page instead of an #anchor. -->
+      <a href="contact.html" onclick="closeMobileNav()">Let's Connect! →</a>
+    </div>
+
+  </nav>
+
+
+  <!-- ============================================================
+    MAIN CONTENT
+    ============================================================
+    All visible page sections live inside <main>.
+    padding-top: 64px matches the header height so content
+    starts below the fixed header instead of being hidden behind it.
+  ============================================================ -->
+  <main style="padding-top: 64px;">
+
+
+    <!-- ============================================================
+      HERO SECTION
+      ============================================================
+      Three-slide background slideshow with text overlay.
+      Slides stack using position: absolute inside .hero.
+      JavaScript cycles .active through them every 4 seconds.
+
+      Layer order (bottom to top):
+        z-index 0-1 : .hero-slide divs
+        z-index 2   : .hero::before dark overlay
+        z-index 3   : .hero-content (text + buttons)
+    ============================================================ -->
+    <section class="hero">
+
+      <!-- ── SLIDE INSTRUCTIONS ──────────────────────────────────
+        HOW TO ADD YOUR OWN IMAGE OR VIDEO:
+
+        OPTION A — Image (replace the commented line):
+          <div class="hero-slide active">
+            <img src="images/slide1.jpg" class="slide-media" alt="describe your photo" />
+          </div>
+
+        OPTION B — Video (autoplay, muted, loops silently):
+          <div class="hero-slide active">
+            <video src="media/reel.mp4" class="slide-media"
+                   autoplay muted loop playsinline></video>
+          </div>
+
+        OPTION C — Keep the dark gradient (leave the div empty).
+
+        class="slide-media" makes the image or video fill the slide
+        with object-fit: cover — no stretching, no distortion.
+      ─────────────────────────────────────────────────────────── -->
+
+      <!-- Slide 1 — first visible slide (has class="active" by default) -->
+      <div class="hero-slide">
+        <!-- IMAGE: <img src="images/slide2.jpg" class="slide-media" alt="slide 2 description" /> -->
+         VIDEO: <video src="media/A002_A002_03041C.mp4" class="slide-media" autoplay muted loop playsinline poster="https://placehold.co/1920x1080?text=Slide+2+Video"></video> 
+      </div>
+
+
+      <!-- Slide 2 — becomes active after 4 seconds -->
+      <div class="hero-slide">
+        <!-- IMAGE: <img src="images/slide2.jpg" class="slide-media" alt="slide 2 description" /> -->
+         VIDEO: <video src="media/A002_A007_03043Q.mp4" class="slide-media" autoplay muted loop playsinline poster="https://placehold.co/1920x1080?text=Slide+2+Video"></video> 
+      </div>
+
+      <!-- Slide 3 — becomes active after 8 seconds -->
+      <div class="hero-slide">
+        <!-- IMAGE: <img src="images/slide2.jpg" class="slide-media" alt="slide 2 description" /> -->
+         VIDEO: <video src="media/A002_A005_0304X9.mp4" class="slide-media" autoplay muted loop playsinline poster="https://placehold.co/1920x1080?text=Slide+2+Video"></video> 
+      </div>
+
+
+      <!-- Hero text content (above slides and overlay via z-index: 3).
+           Each .slide-text matches one .hero-slide.
+           JavaScript swaps the active class on both in sync. -->
+      <div class="hero-content">
+
+        <!-- Eyebrow pill label — shared across all slides -->
+        <span class="hero-eyebrow">Apex · Card · Show</span>
+
+        <!-- Wrapper keeps slide texts contained so they don't overlap buttons -->
+        <div class="slide-text-wrapper">
+
+          <!-- Slide 1 text — active by default to match the first slide -->
+          <div class="slide-text active">
+            <h2>WELCOME TO APEX CARD SHOW</h2>
+            <p>Apex Card Show stands out as the top trading card experience in the DMV area. You'll meet top vendors,
+              score unbeatable deals, and enjoy a collector-focused atmosphere at our events.</p>
+          </div>
+          <br>
+
+          <!-- Slide 2 text — describe your second image or video -->
+          <div class="slide-text">
+            <h2>WHAT IS APEX CARD SHOW</h2>
+            <p>We host premier TCG events, vend rare finds, create engaging content, and unite the trading card
+              community in the DMV. From epic buys and trades to live event hype online, we're your guide through the
+              collecting adventure! </p>
+            <br>
+          </div>
+
+
+          <!-- Slide 3 text — describe your third image or video -->
+          <div class="slide-text">
+            <h2>UNLOCK AT APEX CARD SHOW</h2>
+            <p>Step into the excitement, enter to win and claim your prize! From rare TCG pulls to exciting giveaways
+              like <b>$10 Apex Cash for the first 50 guests.</b></p>
+          </div>
+
+        </div>
+
+        <!-- CTA buttons sit below the slide text.
+             Updated from projects.html to events.html and "About Me" to "About Us"
+             to match the new TCG site naming. -->
+        <div class="hero-buttons">
+          <a href="events.html" class="btn-primary">View Our Events →</a>
+          <a href="about.html" class="btn-secondary">About Us</a>
+        </div>
+
+      </div>
+
+      <!-- Slide indicator dots at the bottom of the hero.
+           id="slideDots" — JavaScript uses this to find the dot buttons.
+           Each button has onclick="goToSlide(n)" to jump to a specific slide.
+           The first button has class="active" to match the first slide. -->
+      <div class="slide-dots" id="slideDots">
+        <button class="active" onclick="goToSlide(0)" aria-label="Slide 1"></button>
+        <button onclick="goToSlide(1)" aria-label="Slide 2"></button>
+        <button onclick="goToSlide(2)" aria-label="Slide 3"></button>
+      </div>
+
+    </section>
+
+
+    <!-- ============================================================
+      FEATURE SECTION 1 — IMAGE LEFT, TEXT RIGHT
+      ============================================================
+      id="about" — the "About Us" hero button scrolls here.
+      Z-pattern: this section has image on the left, text on the right.
+      Updated content to describe Apex Card Show instead of portfolio work.
+    ============================================================ -->
+    <section class="section white" id="about">
+      <div class="feature-inner fade-up">
+
+        <!-- Left: image placeholder — replace with an event photo -->
+        <div class="feature-visual">
+          <div class="placeholder"
+            style="background-image:url('images/IMG_8015.jpeg'); background-size:cover; background-position:center;">
+          </div>
+        </div>
+
+        <!-- Right: text content — updated to reflect Apex Card Show's identity -->
+        <div class="feature-text">
+          <!-- Changed label from "What I Build" to "Who We Are" -->
+          <span class="section-label">Who We Are</span>
+          <!-- Changed heading to reflect Apex's brand identity -->
+          <h2 class="section-heading"> DMV's Premier TCG Hub.</h2>
+          <p class="section-sub">
+            Apex Card Show is the trading card community's home in the DMV.
+            We bring together collectors, vendors, and fans of Pokémon,
+            One Piece, Yu-Gi-Oh, and more — creating unforgettable events
+            where rare cards find new owners!
+          </p>
+          <a href="events.html" class="btn-primary" style="align-self: flex-start; margin-top: 8px;">
+            See Our Events →
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+      FEATURE SECTION 2 — TEXT LEFT, IMAGE RIGHT (Z-pattern)
+      ============================================================
+      class="reverse" flips the column order so the eye follows
+      a Z-pattern: section 1 = image left, section 2 = image right.
+      Updated content to describe Apex's vending operation.
+    ============================================================ -->
+    <section class="section gray">
+      <div class="feature-inner reverse fade-up">
+
+        <!-- Visual comes first in HTML; .reverse (direction: rtl) moves it to the RIGHT -->
+        <div class="feature-visual">
+          <div class="placeholder"
+            style="background-image:url('images/IMG_7989.jpeg'); background-size:cover; background-position:center;">
+          </div>
+        </div>
+
+        <!-- Text moves to the LEFT because of .reverse -->
+        <!-- Updated label from "Responsive Design" to "What We Vend" -->
+        <div class="feature-text">
+          <span class="section-label">What We Vend</span>
+          <!-- Updated heading to reflect vending focus -->
+          <h2 class="section-heading">Rare finds. Competitive prices. Exclusive trades. </h2>
+          <p class="section-sub">
+            Our vendor tables feature a wide selection of raw singles, slabs, sealed products, and TCG collectibles
+            across all your favorite categories. Whether you are searching for a specific card or exploring new
+            additions for your collection, Apex vendors offer something for collectors at every level.
+          </p>
+          <a href="vending.html" class="btn-primary" style="align-self: flex-start; margin-top: 8px;">
+            Explore Vending →
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+      EVENTS CARDS SECTION
+      ============================================================
+      id="events" — nav links scroll here.
+      Changed from "projects" to "events" throughout this section.
+      Three event preview cards in a responsive auto-fit grid.
+      Each card is an <a> tag so the entire card is clickable.
+    ============================================================ -->
+    <!-- Changed id from "projects" to "events" to match new page purpose -->
+    <section class="section white" id="events">
+
+      <!-- Section header row: heading left, "View all" link right.-->
+
+      <div class="projects-header fade-up">
+        <div>
+          <span class="section-label">Our Events</span>
+          <h2 class="section-heading" style="margin-bottom:0;">Don't Miss Out.</h2>
+        </div>
+        <a href="events.html" class="view-all">View all →</a>
+      </div>
+
+      <!-- Card grid — auto-fills columns, minimum 300px each -->
+      <div class="project-grid">
+
+        <!-- ── EVENT CARD 1 ────────────────────────────────────
+          Updated from a generic project card to an Apex event card.
+          href points to events.html for all three cards.
+        ──────────────────────────────────────────────────────── -->
+        <a href="events.html" class="project-card fade-up">
+
+          <!-- Thumbnail: gradient with event branding -->
+          <div class="card-thumb thumb-gradient-purple">
+            <!-- object-position: center 92% — crops to the very bottom of the flyer
+                 where Pikachu, Eevee, Sylveon, and Luffy live, hiding all text above -->
+            <img src="images/luffy.png" alt="Apex Card Show Easter Edition flyer"
+              style="object-position: center 92%;" />
+            <span class="thumb-label"></span>
+            <!-- Changed tag from "HTML / CSS" to event type label -->
+            <span class="card-tag">PAST EVENT</span>
+          </div>
+
+          <!-- Card text body below the thumbnail -->
+          <div class="card-body">
+            <!-- Updated title to reflect an actual Apex event -->
+            <h3>Apex Card Show — Easter Edition 2026</h3>
+            <!-- Updated description to reflect TCG event details -->
+            <p>Join us for our first Easter card show! 70+ vendors, $1,500 in giveaways, and $10 Apex Cash for the first
+              50 guests. Photo booth.</p>
+          </div>
+
+        </a>
+
+        <!-- ── EVENT CARD 2 ──────────────────────────────────── -->
+        <a href="events.html" class="project-card fade-up">
+          <div class="card-thumb thumb-gradient-ink">
+            <!-- object-position: center 62% — centers the crop on the Venusaur/Bulbasaur/
+                 Chikorita cluster (~42–72% of the flyer), hiding the text boxes and Red Bull logo -->
+            <img src="images/bulba.png" alt="Apex Card Show Garden Exchange flyer"
+              style="object-position: center 62%;" />
+            <span class="thumb-label"></span>
+            <!-- Changed tag to reflect event type -->
+            <span class="card-tag">UPCOMING</span>
+          </div>
+          <div class="card-body">
+            <!-- Updated title and description for a recurring community event -->
+            <h3>Apex Card Show — Garden Exchange 2026</h3>
+            <p>Don't miss out on our Garden Exchange event! 80+ vendors, Raffle prizes, and giveaways. $10 Apex cash for
+              the first 50 guests!</p>
+          </div>
+        </a>
+
+        <!-- ── EVENT CARD 3 ──────────────────────────────────── -->
+        <a href="events.html" class="project-card fade-up">
+          <div class="card-thumb thumb-gradient-sunset">
+            <!-- object-position: center 28% — crops to Squirtle/Psyduck/Magikarp art
+                 (~8–48% of flyer), skipping the "APEX CARD SHOW" text strip at the very top -->
+            <img src="images/squirtle.png" alt="Apex Card Show Summer Social flyer"
+              style="object-position: center 28%;" />
+            <span class="thumb-label"></span>
+            <!-- Changed tag to reflect tournament type -->
+            <span class="card-tag">UPCOMING</span>
+          </div>
+          <div class="card-body">
+            <!-- Updated title and description for a tournament event -->
+            <h3>Apex Card Show — Summer Social 2026</h3>
+            <p>Join us for our Summer Social card show!. 90+ Vendors, $10 Apex Cash for the first 50 guests, Photo booth
+              and more</p>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+
+
+
+    <!-- ============================================================
+      CTA (CALL TO ACTION) BAND
+      ============================================================
+      id="contact" — nav links and the "Hire Me" header button scroll here.
+      Updated messaging to reflect Apex Card Show's brand voice.
+    ============================================================ -->
+    <section class="cta-band" id="contact">
+      <div class="cta-inner fade-up">
+
+        <!-- Updated CTA text from portfolio language to event/community language -->
+        <div class="cta-text">
+          <h2>Ready to join the show?</h2>
+          <p>
+            Have questions about our events, interested in vending, or want to
+            partner with Apex? We'd love to connect with you.
+          </p>
+        </div>
+
+        <!-- Updated mailto and button text for Apex Card Show contact -->
+        <a href="contact.html" class="btn-primary">
+          Get in Touch →
+        </a>
+
+      </div>
+    </section>
+
+
+  </main><!-- end of main content -->
+
+
+  <!-- ============================================================
+    FOOTER
+    ============================================================
+    Simple centered dark footer.
+    Updated from placeholder text to actual Apex Card Show branding.
+    &copy; = © copyright symbol.
+    &middot; = · middle dot separator character.
+  ============================================================ -->
+  <footer>
+    <!-- Updated footer from placeholder portfolio text to Apex Card Show branding -->
+
+    <!-- Social media icons row - matches the 703 footer style.
+         Linked to Apex Card Show's Instagram and Facebook accounts. -->
+    <div class="footer-social">
+      <a href="https://www.instagram.com/apexcardshow/" target="_blank" aria-label="Instagram">
+        <i class="ph ph-instagram-logo"></i>
+      </a>
+      <a href="https://www.facebook.com/people/Apex-Card-Show/61580704702168/?mibextid=wwXIfr&rdid=xxdHKMl7f3QbmXjg&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F18RZbv8b7E%2F%3Fmibextid%3DwwXIfr"
+        target="_blank" aria-label="Facebook">
+        <i class="ph ph-facebook-logo"></i>
+      </a>
+    </div>
+
+    <p>© 2026 <strong style="color:rgba(255,255,255,.75);">Apex Events LLC</strong> &middot; Apex Card Show &middot; All
+      Rights Reserved</p>
+    <!-- Removed the reduced-motion link as it was a portfolio-specific feature -->
+    <p style="margin-top:8px;font-size:.85rem;opacity:.7;">
+      <a href="events.html" style="color:inherit;text-decoration:underline;">Events</a>
+      &nbsp;·&nbsp;
+      <a href="vending.html" style="color:inherit;text-decoration:underline;">Vending</a>
+      &nbsp;·&nbsp;
+      <a href="about.html" style="color:inherit;text-decoration:underline;">About</a>
+      &nbsp;·&nbsp;
+      <a href="contact.html" style="color:inherit;text-decoration:underline;">Contact</a>
+    </p>
+  </footer>
+
+
+  <!-- ============================================================
+    JAVASCRIPT
+    ============================================================
+    All JavaScript lives in one <script> block at the bottom of
+    the page — AFTER all the HTML. This is intentional.
+
+    WHY AT THE BOTTOM: JavaScript that runs at the top of the page
+    (inside <head>) executes before the HTML exists, so
+    document.getElementById() and similar methods find nothing.
+    Placing <script> at the bottom ensures all HTML elements
+    have been created before JavaScript tries to find them.
+
+    Three independent features:
+      1. Hero Slideshow    — cycles slides on a timer
+      2. Mobile Nav        — open/close the right-side panel
+      3. Scroll Animations — fades elements in as you scroll
+  ============================================================ -->
+  <script>
+
+    // ============================================================
+    // 1. HERO SLIDESHOW
+    // ============================================================
+    // Videos need explicit .play() calls — browsers suspend video
+    // playback on elements with opacity:0, so just toggling the
+    // active class isn't enough. We pause the outgoing video and
+    // play the incoming one every time the slide changes.
+    // ============================================================
+
+    const slides      = document.querySelectorAll('.hero-slide');
+    const slideTexts  = document.querySelectorAll('.slide-text-wrapper .slide-text');
+    const dotButtons  = document.querySelectorAll('#slideDots button');
+    let currentSlide  = 0;
+    let slideTimer;
+
+    // Helper: get the <video> inside a slide (returns null if none)
+    function getVideo(slideEl) {
+      return slideEl.querySelector('video');
+    }
+
+    // Pause all videos, then play only the one in the active slide.
+    // This prevents multiple videos fighting each other.
+    function syncVideos(activeIndex) {
+      slides.forEach(function(slide, i) {
+        var vid = getVideo(slide);
+        if (!vid) return;
+        if (i === activeIndex) {
+          vid.currentTime = 0; // restart from beginning each time
+          vid.play().catch(function() {
+            // Autoplay blocked — silently ignored (muted videos
+            // should always be allowed, but just in case)
+          });
+        } else {
+          vid.pause();
+        }
+      });
+    }
+
+    function goToSlide(n) {
+      slides[currentSlide].classList.remove('active');
+      slideTexts[currentSlide].classList.remove('active');
+      dotButtons[currentSlide].classList.remove('active');
+
+      currentSlide = n;
+
+      slides[currentSlide].classList.add('active');
+      slideTexts[currentSlide].classList.add('active');
+      dotButtons[currentSlide].classList.add('active');
+
+      syncVideos(currentSlide);
+
+      clearInterval(slideTimer);
+      slideTimer = setInterval(nextSlide, 7000);
+    }
+
+    function nextSlide() {
+      goToSlide((currentSlide + 1) % slides.length);
+    }
+
+    // Kick everything off once the DOM is ready.
+    // Play slide 0's video immediately and start the timer.
+    syncVideos(0);
+    slideTimer = setInterval(nextSlide, 1000);
+
+
+    // ============================================================
+    // 2. MOBILE NAVIGATION — RIGHT SIDE
+    // ============================================================
+    // How it works:
+    //   - .mobile-nav starts at right: -100% (off-screen, CSS)
+    //   - openMobileNav() adds class="open" → CSS sets right: 0
+    //   - CSS transition: right .32s ease animates the slide
+    //   - closeMobileNav() removes class="open" → slides back
+    //   - The overlay is shown/hidden in sync with the nav
+    //   - body scroll is locked while nav is open
+    // ============================================================
+
+    function openMobileNav() {
+      // Add .open to the nav panel — triggers CSS to slide it in from the right
+      document.getElementById('mobileNav').classList.add('open');
+
+      // Add .show to the overlay — makes the dark dimming layer visible
+      document.getElementById('mobileOverlay').classList.add('show');
+
+      // Lock the page from scrolling while the nav is open.
+      // Without this, the user could scroll the page behind the nav,
+      // which is disorienting and hard to undo.
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileNav() {
+      // Remove .open from the nav — triggers CSS to slide it back off-screen
+      document.getElementById('mobileNav').classList.remove('open');
+
+      // Remove .show from the overlay — hides the dimming layer
+      document.getElementById('mobileOverlay').classList.remove('show');
+
+      // Restore normal page scrolling
+      document.body.style.overflow = '';
+      // '' (empty string) removes the inline style entirely,
+      // so the element reverts to whatever the stylesheet specifies.
+    }
+
+    // Allow the Escape key to close the mobile nav.
+    // document.addEventListener() listens for events on the entire page.
+    // 'keydown' fires when any key is pressed.
+    document.addEventListener('keydown', function (e) {
+      // e.key is the name of the key that was pressed.
+      // If Escape was pressed, close the nav.
+      if (e.key === 'Escape') closeMobileNav();
+    });
+
+
+    // ============================================================
+    // 3. SCROLL FADE-UP ANIMATIONS
+    // ============================================================
+    // How it works:
+    //   - Elements with class="fade-up" start invisible (CSS)
+    //   - IntersectionObserver watches each .fade-up element
+    //   - When one enters the viewport, observer adds .visible
+    //   - CSS transitions opacity 0→1 and translateY 36px→0
+    //   - observer.unobserve() stops watching after first trigger
+    //     so the element doesn't fade out again when scrolled past
+    // ============================================================
+
+    // IntersectionObserver is a modern browser API that efficiently
+    // detects when elements enter or leave the viewport.
+    // It's much better than the old approach of listening to
+    // the 'scroll' event (which fired hundreds of times per second).
+
+    const observer = new IntersectionObserver(
+      // Callback function — runs each time a watched element's
+      // visibility state changes
+      function (entries) {
+        entries.forEach(function (entry) {
+          // entry.isIntersecting is true when the element
+          // has entered the viewport (is visible to the user)
+          if (entry.isIntersecting) {
+
+            // Add .visible class — triggers the CSS fade-up animation
+            entry.target.classList.add('visible');
+
+            // Stop watching this element once it has animated in.
+            // Without this, the element could animate again if
+            // scrolled out and back in — usually unwanted behavior.
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+
+      // Options object — configures when the callback fires
+      {
+        threshold: 0.1,
+        // Fire when at least 10% of the element is visible.
+        // Using 0 would trigger as soon as 1px enters the viewport,
+        // which feels too early. 0.1 waits until there's enough of
+        // the element visible that the animation makes visual sense.
+
+        rootMargin: '0px 0px -40px 0px'
+        // Shrinks the detection zone by 40px from the bottom.
+        // This means the element needs to be 40px further into the
+        // viewport before animating — prevents triggering too early
+        // on elements that are just barely entering the bottom edge.
+      }
+    );
+
+    // Find every element with class="fade-up" and start watching it.
+    // querySelectorAll returns a NodeList; forEach loops through each element.
+    document.querySelectorAll('.fade-up').forEach(function (el) {
+      observer.observe(el);
+      // observe() registers this element with the IntersectionObserver.
+      // The observer will now call the callback whenever this element's
+      // visibility changes.
+    });
+
+  </script>
+
+</body>
+
+</html>
